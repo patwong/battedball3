@@ -131,6 +131,10 @@ def adding_ba_to_dict(csv_fname):
         f1.write("players not in dictionary:\n")
 
     for row in csvreader:
+        # csv file is currently formatted with the first line being "Name, Avg"
+        # all subsequent elements are of that form
+        # csv.reader formats each line ("row") as a list of strings
+        # list index 0 points to the name, 1 points to their average
         player_name = row[0]
         if player_name in pdict:
             ba = float(row[1])
@@ -139,6 +143,8 @@ def adding_ba_to_dict(csv_fname):
         elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
             to_out = row[0] + '\n'
             f1.write(to_out)
+
+    # for safety, close the file
     if nic == 1:
         f1.close()
 # end adding_ba_to_dict
