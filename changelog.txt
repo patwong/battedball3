@@ -1,4 +1,4 @@
-[battedball changelog]
+[battedball3 changelog]
 2016.12.08
 - using battedball.py from testcode as base
 - setting global playercount
@@ -12,3 +12,7 @@
 
 2016.12.14
 - added line of best fit to the data
+
+2016.12.15
+- ported code to python3
+- separated plotting function to separate file; bbplotter.py
