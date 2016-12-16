@@ -1,0 +1,14 @@
+[battedball changelog]
+2016.12.08
+- using battedball.py from testcode as base
+- setting global playercount
+	- only dictionaries and lists are mutable objects
+		- modification modifies the original value
+	- numbers, strings, tuples are local scope
+	source: http://stackoverflow.com/questions/15078519/python-dictionary-passed-as-an-input-to-a-function-acts-like-a-global-in-that-fu
+- added scatter plot
+- truncating floats
+	source: http://stackoverflow.com/questions/8595973/truncate-to-3-decimals-in-python
+
+2016.12.14
+- added line of best fit to the data
