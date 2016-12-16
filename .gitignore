@@ -13,6 +13,7 @@ __pycache__
 *.o
 *.so
 *.pyc
+*.pickle
 
 # Packages #
 ############

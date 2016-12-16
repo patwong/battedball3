@@ -127,24 +127,48 @@ def main():
     # populate pdict
     json_fname = "playerlist.json"
 
-    # pdict.npy, statdict.py are our already populated dictionaries
-    # will temporarily use to save computation time
-    pdictfile = 'pdict.npy'
-    statdictfile = 'statdict.npy'
+
+    # using pickle to store pdict and statdict
     import os.path
-    import numpy as np
-    if os.path.isfile(pdictfile) and os.path.isfile(statdictfile):
-        global pdict        # this allows access to global variable pdict/statdict
-        global statdict     # without using pdict, creates a local scope pdict/statdict
-        pdict = np.load(pdictfile).item()
-        statdict = np.load(statdictfile).item()
+    import pickle
+    pickled_pdict = "pdict.pickle"
+    pickled_statdict = "statdict.pickle"
+    if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
+        print('pickled pdict and statdict found')
+        with open(pickled_pdict, 'rb') as pdhandle:
+            global pdict
+            pdict = pickle.load(pdhandle)
+        with open(pickled_statdict, 'rb') as sdhandle:
+            global statdict
+            statdict = pickle.load(sdhandle)
     else:
-        print('pdict and statdict file not found')
+        print('pickled pdict and statdict file not found')
         parse_and_dict(json_fname)
         fa_file = "fullfalist.txt"
         merge_fas(fa_file)
-        np.save(pdictfile, pdict)
-        np.save(statdictfile, statdict)
+        with open(pickled_pdict, 'wb') as pdhandle:
+            pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(pickled_statdict, 'wb') as sdhandle:
+            pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+    # pdict.npy, statdict.py are our already populated dictionaries
+    # will temporarily use to save computation time
+    # pdictfile = 'pdict.npy'
+    # statdictfile = 'statdict.npy'
+    # import numpy as np
+    # if os.path.isfile(pdictfile) and os.path.isfile(statdictfile):
+    #    global pdict        # this allows access to global variable pdict/statdict
+    #    global statdict     # without using pdict, creates a local scope pdict/statdict
+    #    pdict = np.load(pdictfile).item()
+    #    statdict = np.load(statdictfile).item()
+    #else:
+    #    print('pdict and statdict file not found')
+    #    parse_and_dict(json_fname)
+    #    fa_file = "fullfalist.txt"
+    #    merge_fas(fa_file)
+    #    np.save(pdictfile, pdict)
+    #    np.save(statdictfile, statdict)
 
     # to check if item is in dict, do this: ITEM in dict_name
     gsname = "Giancarlo Stanton"
@@ -167,6 +191,13 @@ def main():
     # use plotter function to produce scatter plot
     bbplotter.fa_to_plot(pdict, statdict)
 
+    # update dictionaries
+    # with open(pickled_pdict, 'wb') as pdhandle:
+    #     pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+    # with open(pickled_statdict, 'wb') as sdhandle:
+    #     pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
     # !!debugging statements!!
 
     # dictionaries are mutable
@@ -178,4 +209,9 @@ def main():
 # end main
 
 # run program
+import time
+start_time = time.time()
 main()
+end_time = time.time()
+bbruntime = end_time - start_time
+print("runtime was: " + str(bbruntime))

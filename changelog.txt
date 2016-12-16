@@ -22,4 +22,7 @@
 	source: http://stackoverflow.com/questions/19201290/how-to-save-a-dictionary-to-a-file-in-python
 	- accessing outer scope variable requires it to be first declared as global
 		source: https://docs.python.org/3/faq/programming.html
--
+- moved dictionaries to pickle files to save diskspace
+	- pickle files are smaller than the numpy files
+	source: http://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict
+- for debugging, added a plt.show(block=False) statement to prevent matplotlib from blocking

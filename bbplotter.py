@@ -21,6 +21,7 @@ def fa_to_plot(pdict, statdict):
     fa_c = 0        # free_agent counter: used to set the legend
     nfa_c = 0       # not free agent counter: used to set the legend
 
+    # bbfig = plt.figure()
     for key in pdict:
         player = pdict[key]
         if player['brl_pa'] != 0:
@@ -55,6 +56,10 @@ def fa_to_plot(pdict, statdict):
     plt.ylim(0, statdict['max_brl_pa'] + 0.02)
     plt.xlim(80, statdict['max_avg_hs'] + 1)
     plt.show()
+#    plt.show(block=False)  # prevents matplotlib plot from blocking
+    # plt.close(bbfig)
+#    plt.close('all')
+#    return
 
     # debugging statements:
     # statdict['surprise'] = "dict is mutable :)"   # dictionaries are mutable
