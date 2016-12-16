@@ -115,6 +115,34 @@ def parse_and_dict(json_fname):
 # end parse_and_dict
 
 
+# from csv file, add a player's BA to the dictionary
+def adding_ba_to_dict(csv_fname):
+    import csv
+    import os.path
+
+    csvfile = open(csv_fname, 'rt', encoding='us-ascii')
+    csvreader = csv.reader(csvfile)
+    notindict = "playersnotindict.txt"
+    nic = 0
+    if not(os.path.isfile(notindict)):
+        nic = 1     # if nic == 1, file only written once
+        print("creating file that contains players not in dictionary")
+        f1 = open(notindict, 'a')
+        f1.write("players not in dictionary:\n")
+
+    for row in csvreader:
+        player_name = row[0]
+        if player_name in pdict:
+            ba = float(row[1])
+            player = pdict[player_name]
+            player['ba'] = ba
+        elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
+            to_out = row[0] + '\n'
+            f1.write(to_out)
+    if nic == 1:
+        f1.close()
+# end adding_ba_to_dict
+
 # the main machine
 # battedball.py populates player dictionary "pdict" and stat dictionary "statdict"
 #   as it iterates through the json file of players
@@ -127,7 +155,6 @@ def main():
     # populate pdict
     json_fname = "playerlist.json"
 
-
     # using pickle to store pdict and statdict
     import os.path
     import pickle
@@ -136,6 +163,8 @@ def main():
     if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
         print('pickled pdict and statdict found')
         with open(pickled_pdict, 'rb') as pdhandle:
+            # need to declare pdict and statdict as global to access the global variable
+            # otherwise will access a variable in the local scope
             global pdict
             pdict = pickle.load(pdhandle)
         with open(pickled_statdict, 'rb') as sdhandle:
@@ -151,24 +180,12 @@ def main():
         with open(pickled_statdict, 'wb') as sdhandle:
             pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
-    # pdict.npy, statdict.py are our already populated dictionaries
-    # will temporarily use to save computation time
-    # pdictfile = 'pdict.npy'
-    # statdictfile = 'statdict.npy'
-    # import numpy as np
-    # if os.path.isfile(pdictfile) and os.path.isfile(statdictfile):
-    #    global pdict        # this allows access to global variable pdict/statdict
-    #    global statdict     # without using pdict, creates a local scope pdict/statdict
-    #    pdict = np.load(pdictfile).item()
-    #    statdict = np.load(statdictfile).item()
-    #else:
-    #    print('pdict and statdict file not found')
-    #    parse_and_dict(json_fname)
-    #    fa_file = "fullfalist.txt"
-    #    merge_fas(fa_file)
-    #    np.save(pdictfile, pdict)
-    #    np.save(statdictfile, statdict)
+    # adding batting average to player stats
+    csvfname = "fgleaderboard_ba_only.csv"
+    if os.path.isfile(csvfname):
+        adding_ba_to_dict(csvfname)
+    else:
+        print("csv not found")
 
     # to check if item is in dict, do this: ITEM in dict_name
     gsname = "Giancarlo Stanton"
@@ -177,10 +194,6 @@ def main():
         print (str(gs1['name']) + " had an average speed of " + str(gs1['gb']) + " mph on his groundballs")
     else:
         print (gsname + " isn't in the dictionary")
-    if 'Bob Sutton' in pdict:
-        print ("how??")
-    else:
-        print ("Bob Sutton not in the dictionary")
 
     pcname = "pc"
     if pcname in statdict:
@@ -188,15 +201,21 @@ def main():
     else:
         print (pcname + " isn't in the stat dictionary")
 
+    # testing adding_ba_to_dict()
+    miketrout = "Mike Trout"
+    if miketrout in pdict:
+        print(miketrout + " has a batting average of " + str(pdict[miketrout]['ba']))
+    else:
+        print(miketrout + " not found")
+
     # use plotter function to produce scatter plot
-    bbplotter.fa_to_plot(pdict, statdict)
+    # bbplotter.fa_to_plot(pdict, statdict)
 
     # update dictionaries
     # with open(pickled_pdict, 'wb') as pdhandle:
     #     pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
     # with open(pickled_statdict, 'wb') as sdhandle:
     #     pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
     # !!debugging statements!!
 
@@ -208,10 +227,16 @@ def main():
     #    print ("There is no surprise :(")
 # end main
 
+# time.time() times the program
+# seems like saving the dictionaries into dict doesn't save any computation time
+# might be because reading from the file is slower than populating a dictionary
+
+# import time
+# start_time = time.time()
+
 # run program
-import time
-start_time = time.time()
 main()
-end_time = time.time()
-bbruntime = end_time - start_time
-print("runtime was: " + str(bbruntime))
+
+# end_time = time.time()
+# bbruntime = end_time - start_time
+# print("runtime was: " + str(bbruntime))

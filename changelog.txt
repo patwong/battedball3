@@ -10,12 +10,15 @@
 - truncating floats
 	source: http://stackoverflow.com/questions/8595973/truncate-to-3-decimals-in-python
 
+
 2016.12.14
 - added line of best fit to the data
+
 
 2016.12.15
 - ported code to python3
 - separated plotting function to separate file; bbplotter.py
+
 
 2016.12.16
 - moved dictionaries to pyc files to save computation time
@@ -26,3 +29,20 @@
 	- pickle files are smaller than the numpy files
 	source: http://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict
 - for debugging, added a plt.show(block=False) statement to prevent matplotlib from blocking
+	source: http://stackoverflow.com/questions/17149646/matplotlib-force-plot-display-and-then-return-to-main-code
+- adding batting average to player's stats
+	- exported FanGraphs' batting leaderboards for batters with a minimumm 50 ABs, using csv package
+	source: https://docs.python.org/2/library/csv.html#csv.reader
+		http://stackoverflow.com/questions/8515053/csv-error-iterator-should-return-strings-not-bytes
+	- "rt" reads the file as a text file, "rb" reads the file as a byte file
+		- documentation on "open" lists the character modes that can be used when reading a file
+			source: https://docs.python.org/3/library/functions.html#open
+	- to find a file's encoding, on linux terminal use command "file -bi <filename>"
+		source: http://mindspill.net/computing/linux-notes/determine-and-change-file-character-encoding/
+	- aside: python3.3+ treats newlines and things differently than lower versions
+		source: http://stackoverflow.com/questions/14202438/dont-convert-newline-when-reading-a-file
+	- how to write, append to a file
+		source: http://stackoverflow.com/questions/6159900/correct-way-to-write-line-to-file-in-python
+			http://stackoverflow.com/questions/4706499/how-do-you-append-to-a-file-in-python
+	-
+-
