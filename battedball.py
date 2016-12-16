@@ -124,7 +124,23 @@ def main():
 
     # populate pdict
     json_fname = "playerlist.json"
-    parse_and_dict(json_fname)
+
+    # pdict.npy, statdict.py are our already populated dictionaries
+    # will temporarily use to save computation time
+    pdictfile = 'pdict.npy'
+    statdictfile = 'statdict.npy'
+    import os.path
+    import numpy as np
+    if os.path.isfile(pdictfile) and os.path.isfile(statdictfile):
+        global pdict        # this allows access to global variable pdict/statdict
+        global statdict     # without using pdict, creates a local scope pdict/statdict
+        pdict = np.load(pdictfile).item()
+        statdict = np.load(statdictfile).item()
+    else:
+        print('pdict and statdict file not found')
+        parse_and_dict(json_fname)
+        fa_file = "fullfalist.txt"
+        merge_fas(fa_file)
 
     # to check if item is in dict, do this: ITEM in dict_name
     gsname = "Giancarlo Stanton"
@@ -143,8 +159,8 @@ def main():
         print ("There are " + str(statdict[pcname]) + " players recorded")
     else:
         print (pcname + " isn't in the stat dictionary")
-    fa_file = "fullfalist.txt"
-    merge_fas(fa_file)
+
+    # use plotter function to produce scatter plot
     bbplotter.fa_to_plot(pdict, statdict)
 
     # debugging statements
