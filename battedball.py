@@ -8,6 +8,7 @@ import json
 pdict = {}
 statdict = {}
 
+
 # merging list of free agents with dictionary
 # if player is a free agent, change their free agent status to True
 def merge_fas(fa_file):
@@ -18,6 +19,7 @@ def merge_fas(fa_file):
             player = pdict[f_a]
             player['freeagent'] = True      # this actually changes the value of the player in pdict
 # end merge_fas
+
 
 # opens the json file and creates a dictionary
 # working with static jason file 'playerlist.json'
@@ -141,6 +143,8 @@ def main():
         parse_and_dict(json_fname)
         fa_file = "fullfalist.txt"
         merge_fas(fa_file)
+        np.save(pdictfile, pdict)
+        np.save(statdictfile, statdict)
 
     # to check if item is in dict, do this: ITEM in dict_name
     gsname = "Giancarlo Stanton"
@@ -163,7 +167,7 @@ def main():
     # use plotter function to produce scatter plot
     bbplotter.fa_to_plot(pdict, statdict)
 
-    # debugging statements
+    # !!debugging statements!!
 
     # dictionaries are mutable
     # passing a dictionary to a function passes the object, not copy

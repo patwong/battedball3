@@ -16,3 +16,10 @@
 2016.12.15
 - ported code to python3
 - separated plotting function to separate file; bbplotter.py
+
+2016.12.16
+- moved dictionaries to pyc files to save computation time
+	source: http://stackoverflow.com/questions/19201290/how-to-save-a-dictionary-to-a-file-in-python
+	- accessing outer scope variable requires it to be first declared as global
+		source: https://docs.python.org/3/faq/programming.html
+-
