@@ -116,11 +116,12 @@ def parse_and_dict(json_fname):
 
 
 # from csv file, add a player's BA to the dictionary
-def adding_ba_to_dict(csv_fname):
+def fgstats_to_dict(csv_fname):
     import csv
     import os.path
 
-    csvfile = open(csv_fname, 'rt', encoding='us-ascii')
+    # csvfile = open(csv_fname, 'rt', encoding='us-ascii')
+    csvfile = open(csv_fname, 'rt', encoding='utf-8')
     csvreader = csv.reader(csvfile)
     notindict = "playersnotindict.txt"
     nic = 0
@@ -134,12 +135,38 @@ def adding_ba_to_dict(csv_fname):
         # csv file is currently formatted with the first line being "Name, Avg"
         # all subsequent elements are of that form
         # csv.reader formats each line ("row") as a list of strings
-        # list index 0 points to the name, 1 points to their average
+        # list indices:
+        # 0: name, 1: team, 2: games played, 3: plate appearances, 4: HR
+        # 5: runs, 6: rbi, 7: # stolen bases, 8: BB%, 9: K%, 10: ISO
+        # 11: BABIP, 12: BA, 13: OBP, 14: SLG, 15: wOBA, 16: wRC+, 17: BsR
+        # 18: off rating, 19: def rating, 20: fWAR, 21: playerID
         player_name = row[0]
         if player_name in pdict:
-            ba = float(row[1])
+            bb_percent = float(row[8].strip(' %'))/100
+            k_percent = float(row[9].strip(' %')) / 100
+            iso_str = float(row[10])
+            BABIP = float(row[11])
+            BA = float(row[12])
+            OBP = float(row[13])
+            SLG = float(row[14])
+            wOBA = float(row[15])
+            wRCp = int(row[16])
+            BsR = float(row[17])
+            fWAR = float(row[20])
+
             player = pdict[player_name]
-            player['ba'] = ba
+            player['bb%'] = bb_percent
+            player['k%'] = k_percent
+            player['iso_str'] = iso_str
+            player['babip'] = BABIP
+            player['ba'] = BA
+            player['obp'] = OBP
+            player['slg'] = SLG
+            player['wOBA'] = wOBA
+            player['wRC+'] = wRCp
+            player['BsR'] = BsR
+            player['fWAR'] = fWAR
+
         elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
             to_out = row[0] + '\n'
             f1.write(to_out)
@@ -148,6 +175,25 @@ def adding_ba_to_dict(csv_fname):
     if nic == 1:
         f1.close()
 # end adding_ba_to_dict
+
+# remove all auxiliary files created by my program
+# list: playersnotindict.txt, pdict.pickle, statdict.pickle
+def cleanfiles():
+    import os
+    filedir = os.listdir()
+    print("files currently in directory\n" + filedir)
+    print("deleting all pickle files + playersnotindict.txt")
+    # remove pickle files
+    for f in filedir:
+        if f.endswith(".pickle"):
+            os.remove(f)
+        elif f == 'playersnotindict.txt':
+            os.remove(f)
+    print('operation complete')
+    filedir = os.listdir()
+    print("files currently in directory\n" + filedir)
+#end cleanfiles()
+
 
 # the main machine
 # battedball.py populates player dictionary "pdict" and stat dictionary "statdict"
@@ -186,10 +232,10 @@ def main():
         with open(pickled_statdict, 'wb') as sdhandle:
             pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # adding batting average to player stats
-    csvfname = "fgleaderboard_ba_only.csv"
+    # adding fangraphs leaderboard stats to player stat dictionary
+    csvfname = "fgleaders1.csv"
     if os.path.isfile(csvfname):
-        adding_ba_to_dict(csvfname)
+        fgstats_to_dict(csvfname)
     else:
         print("csv not found")
 
@@ -210,12 +256,15 @@ def main():
     # testing adding_ba_to_dict()
     miketrout = "Mike Trout"
     if miketrout in pdict:
-        print(miketrout + " has a batting average of " + str(pdict[miketrout]['ba']))
+        print(miketrout + " has a batting average of " + str(pdict[miketrout]['ba']) + " and an on-base percentage of " + str(pdict[miketrout]['obp']))
     else:
         print(miketrout + " not found")
 
     # use plotter function to produce scatter plot
     # bbplotter.fa_to_plot(pdict, statdict)
+
+    # clean directory
+    # cleanfiles()
 
     # update dictionaries
     # with open(pickled_pdict, 'wb') as pdhandle:

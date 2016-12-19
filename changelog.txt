@@ -46,3 +46,8 @@
 			http://stackoverflow.com/questions/4706499/how-do-you-append-to-a-file-in-python
 	-
 -
+
+2016.12.19
+- added cleanfiles() to remove pickle files and playersnotindict.txt (useful to repopulate the dictionaries)
+	source: http://stackoverflow.com/questions/5532498/delete-files-with-python-through-os-shell
+- added subset of FanGraphs' leaderboard stats to pdict
