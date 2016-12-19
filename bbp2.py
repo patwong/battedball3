@@ -26,31 +26,17 @@ def plotter1(pdict, statdict):
     fa_c = 0        # free_agent counter: used to set the legend
     nfa_c = 0       # not free agent counter: used to set the legend
 
-    fig1, ax1 = plt.subplots(subplot_kw=dict(axisbg='#EEEEEE'))
+    fig1, ax1 = plt.subplots()
     for key in pdict:
         player = pdict[key]
         if player['brl_pa'] != 0:
             if player['freeagent']:
-                if fa_c == 1:
-                    # plt.scatter(player['avg_hit_speed'], player['brl_pa'], marker='D', c=facolor)
-                    lobf_fa_x.append(player['avg_hit_speed'])
-                    lobf_fa_y.append(player['brl_pa'])
-                else:
-                    # plt.scatter(player['avg_hit_speed'], player['brl_pa'], marker='D', c=facolor, label=fastr)
-                    fa_c = 1
-                    lobf_fa_x.append(player['avg_hit_speed'])
-                    lobf_fa_y.append(player['brl_pa'])
+                lobf_fa_x.append(player['avg_hit_speed'])
+                lobf_fa_y.append(player['brl_pa'])
                 playerlist_fa.append(player['name'])
             else:
-                if nfa_c == 1:
-                    # plt.scatter(player['avg_hit_speed'], player['brl_pa'], c=defcolor)
-                    lobf_x.append(player['avg_hit_speed'])
-                    lobf_y.append(player['brl_pa'])
-                else:
-                    # plt.scatter(player['avg_hit_speed'], player['brl_pa'], c=defcolor, label=notfastr)
-                    nfa_c = 1
-                    lobf_x.append(player['avg_hit_speed'])
-                    lobf_y.append(player['brl_pa'])
+                lobf_x.append(player['avg_hit_speed'])
+                lobf_y.append(player['brl_pa'])
                 playerlist.append(player['name'])
     # end loop
 
@@ -58,23 +44,34 @@ def plotter1(pdict, statdict):
     yarray = np.asarray(lobf_y)
     xarray_fa = np.asarray(lobf_fa_x)
     yarray_fa = np.asarray(lobf_fa_y)
-    scatter = ax1.scatter(xarray, yarray, c=defcolor)
+    ax1.scatter(xarray, yarray, c=defcolor)
+    ax1.scatter(xarray_fa, yarray_fa, c=facolor)
+
+
     # ax1.scatter(xarray_fa, yarray_fa, c=facolor)
     xarray = np.concatenate((xarray, xarray_fa), axis=0)
     yarray = np.concatenate((yarray, yarray_fa), axis=0)
+    playerlist.append(playerlist_fa)
+    scatter = ax1.scatter(xarray, yarray, alpha=0)
+
     lr_array = stats.linregress(xarray, yarray)
     xa_lobf = np.linspace(80, 98, 10, dtype=int)
     ya_lobf = lr_array.slope * xa_lobf + lr_array.intercept
     print(lr_array.rvalue)
     ax1.plot(xa_lobf, ya_lobf)
-    # fig1.xlabel('Average Hit Speed')
-    # fig1.ylabel('Barrels/PA')
+    ax1.set_xlabel('Average Hit Speed')
+    ax1.set_ylabel('Barrels/PA')
+    ax1.set_title('Average Hit Speed Underformers')
+
     # fig1.legend(loc='upper left', scatterpoints=1)
 
     tooltip = mpld3.plugins.PointLabelTooltip(scatter, labels=playerlist)
     ax1.grid(color='white', linestyle='solid')
+    #fig1.set_xlim(0, statdict['max_brl_pa'] + 0.02)
     # fig1.ylim(0, statdict['max_brl_pa'] + 0.02)
     # fig1.xlim(80, statdict['max_avg_hs'] + 1)
+
+    # plot the plot
     mpld3.plugins.connect(fig1, tooltip)
     mpld3.show()
     # plt.show()
