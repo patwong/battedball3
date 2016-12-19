@@ -181,7 +181,7 @@ def fgstats_to_dict(csv_fname):
 def cleanfiles():
     import os
     filedir = os.listdir()
-    print("files currently in directory\n" + filedir)
+    print("files currently in directory\n" + str(filedir))
     print("deleting all pickle files + playersnotindict.txt")
     # remove pickle files
     for f in filedir:
@@ -191,7 +191,7 @@ def cleanfiles():
             os.remove(f)
     print('operation complete')
     filedir = os.listdir()
-    print("files currently in directory\n" + filedir)
+    print("files currently in directory\n" + str(filedir))
 #end cleanfiles()
 
 
@@ -227,17 +227,17 @@ def main():
         parse_and_dict(json_fname)
         fa_file = "fullfalist.txt"
         merge_fas(fa_file)
+        csvfname = "fgleaders1.csv"         # adding fangraphs leaderboard stats to player stat dictionary
+        if os.path.isfile(csvfname):
+            fgstats_to_dict(csvfname)
+        else:
+            print("csv not found")
         with open(pickled_pdict, 'wb') as pdhandle:
             pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
         with open(pickled_statdict, 'wb') as sdhandle:
             pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # adding fangraphs leaderboard stats to player stat dictionary
-    csvfname = "fgleaders1.csv"
-    if os.path.isfile(csvfname):
-        fgstats_to_dict(csvfname)
-    else:
-        print("csv not found")
+
 
     # to check if item is in dict, do this: ITEM in dict_name
     gsname = "Giancarlo Stanton"
