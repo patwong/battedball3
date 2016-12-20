@@ -55,5 +55,12 @@
 	- using interactive tooltips
 		- invisible points over the existing points to allow two colors to coexist (alpha=0)
 		source: http://matplotlib.org/api/pyplot_api.html
+			http://stackoverflow.com/questions/30686157/python-matplotlib-invisible-point
 	- fixed appended lists
 		lists are appended with "+" operator
+
+[to add]
+- correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
+- convert files into a class
+	- allows for base constructor to create the dictionaries based on given input, rather than doing it in the main() script
+-

@@ -11,10 +11,9 @@ def brl_pa_vs_avg_hit_speed(pdict, statdict):
     notfastr = "Contracted Player"
     facolor = 'red'
     notfacolor = 'blue'
-    # numplayers = statdict['pc']
 
-    # for line of best fit, two arrays of equal size created
-    # one array corresponding to the x-value, the other with y-values
+    # for line of best fit, two lists of equal size created
+    # one list corresponding to the x-value, the other with y-values
     # using list instead of array; no idea the actual size so list is better
     lobf_x = []
     lobf_y = []
@@ -23,10 +22,10 @@ def brl_pa_vs_avg_hit_speed(pdict, statdict):
     playerlist = []
     playerlist_fa = []
 
-    fa_c = 0        # free_agent counter: used to set the legend
-    nfa_c = 0       # not free agent counter: used to set the legend
-
+    # initialize the plots
     fig1, ax1 = plt.subplots()
+
+    # iterate through the dictionary
     for key in pdict:
         player = pdict[key]
         if player['brl_pa'] != 0:
@@ -42,7 +41,7 @@ def brl_pa_vs_avg_hit_speed(pdict, statdict):
                 print("x, y, name:", player['avg_hit_speed'], player['brl_pa'], player['name'])
     # end loop
 
-    # sets up numpy arrays for matplotlib/mpld3
+    # converts x and y lists to numpy arrays for matplotlib/mpld3
     xarray = np.asarray(lobf_x)
     yarray = np.asarray(lobf_y)
     xarray_fa = np.asarray(lobf_fa_x)
@@ -77,9 +76,7 @@ def brl_pa_vs_avg_hit_speed(pdict, statdict):
     # plot the plot
     mpld3.plugins.connect(fig1, tooltip)
     mpld3.show()
-    # plt.show()
 #    plt.show(block=False)  # prevents matplotlib plot from blocking
-    # plt.close(bbfig)
 #    plt.close('all')
 #    return
 
