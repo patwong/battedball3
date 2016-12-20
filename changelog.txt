@@ -63,4 +63,4 @@
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
 - convert files into a class
 	- allows for base constructor to create the dictionaries based on given input, rather than doing it in the main() script
--
+- generalized plot function, e.g. submit a lambda function to do the math, with other various inputs for x/ylabels, title, legend, more
