@@ -51,7 +51,9 @@
 - added cleanfiles() to remove pickle files and playersnotindict.txt (useful to repopulate the dictionaries)
 	source: http://stackoverflow.com/questions/5532498/delete-files-with-python-through-os-shell
 - added subset of FanGraphs' leaderboard stats to pdict
-- implementing mpld3 scatter plot
+- implementing mpld3 scatter plot in bbp2.py
 	- using interactive tooltips
+		- invisible points over the existing points to allow two colors to coexist (alpha=0)
+		source: http://matplotlib.org/api/pyplot_api.html
 	- fixed appended lists
 		lists are appended with "+" operator

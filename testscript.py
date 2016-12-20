@@ -3,4 +3,4 @@ from scipy import stats
 import bbp2
 
 exec(open('battedball.py').read())
-bbp2.plotter1(pdict, statdict)
+bbp2.brl_pa_vs_avg_hit_speed(pdict, statdict)

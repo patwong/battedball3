@@ -6,11 +6,11 @@ import mpld3
 
 # plots barrels/PA verus average hitting speed
 # may be useful to see who isn't squaring the ball with authority
-def plotter1(pdict, statdict):
+def brl_pa_vs_avg_hit_speed(pdict, statdict):
     fastr = "Free Agent"
     notfastr = "Contracted Player"
     facolor = 'red'
-    defcolor = 'blue'
+    notfacolor = 'blue'
     # numplayers = statdict['pc']
 
     # for line of best fit, two arrays of equal size created
@@ -42,25 +42,27 @@ def plotter1(pdict, statdict):
                 print("x, y, name:", player['avg_hit_speed'], player['brl_pa'], player['name'])
     # end loop
 
+    # sets up numpy arrays for matplotlib/mpld3
     xarray = np.asarray(lobf_x)
     yarray = np.asarray(lobf_y)
     xarray_fa = np.asarray(lobf_fa_x)
     yarray_fa = np.asarray(lobf_fa_y)
-    ax1.scatter(xarray, yarray, c='blue')
-    ax1.scatter(xarray_fa, yarray_fa, marker='D', c='red')
+    ax1.scatter(xarray, yarray, c=notfacolor)                 # not free agent
+    ax1.scatter(xarray_fa, yarray_fa, marker='D', c=facolor)  # free agent
 
-
-    # ax1.scatter(xarray_fa, yarray_fa, c=facolor)
+    # hacky plot-over-plot to allow hoverable tooltips
+    # combines the two arrays (free agent + not free agent) and plots invisible points
+    # (too dumb to figure out a clever way to ensure both colors appear)
     xarray = np.concatenate((xarray, xarray_fa), axis=0)
     yarray = np.concatenate((yarray, yarray_fa), axis=0)
     playerlist = playerlist + playerlist_fa
-    sc1 = ax1.scatter(xarray, yarray, alpha=0)
+    sc1 = ax1.scatter(xarray, yarray, alpha=0)  # alpha=0 plots invisible points
 
     # line of best fit
     lr_array = stats.linregress(xarray, yarray)
     xa_lobf = np.linspace(80, 98, 10, dtype=int)
     ya_lobf = lr_array.slope * xa_lobf + lr_array.intercept
-    # print(lr_array.rvalue)  # 0.6739
+    # print(lr_array.rvalue)  # correlation coefficient 0.6739 ; slight positive correlation
     ax1.plot(xa_lobf, ya_lobf)
 
     ax1.set_xlabel('Average Hit Speed')
@@ -71,9 +73,6 @@ def plotter1(pdict, statdict):
 
     tooltip = mpld3.plugins.PointLabelTooltip(sc1, labels=playerlist)
     ax1.grid(color='white', linestyle='solid')
-    #fig1.set_xlim(0, statdict['max_brl_pa'] + 0.02)
-    # fig1.ylim(0, statdict['max_brl_pa'] + 0.02)
-    # fig1.xlim(80, statdict['max_avg_hs'] + 1)
 
     # plot the plot
     mpld3.plugins.connect(fig1, tooltip)
