@@ -1,6 +1,4 @@
 players not in dictionary:
-Nori Aoki
-Albert Almora
 Noah Syndergaard
 Tom Murphy
 Pedro Severino
@@ -12,20 +10,17 @@ Bud Norris
 Steve Selsky
 Joe Ross
 A.J. Pollock
-Bruce Maxwell III
 Gerrit Cole
 Manuel Margot
 Robbie Ray
 Junior Guerra
 Josh Rutledge
 Julio Teheran
-KikÃ© Hernandez
 Jeremy Hellickson
 Steven Matz
 Vince Velasquez
 Andrew Cashner
 Jake Peavy
-Ivan De Jesus
 Richie Shaffer
 Matt den Dekker
 Clayton Kershaw
@@ -35,7 +30,6 @@ Cory Spangenberg
 Tyler Chatwood
 Jaime Garcia
 Jorge de la Rosa
-Byung-ho Park
 Mike Leake
 Tyler Anderson
 Drew Pomeranz

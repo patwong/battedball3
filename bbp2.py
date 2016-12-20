@@ -76,6 +76,7 @@ def brl_pa_vs_avg_hit_speed(pdict, statdict):
     # plot the plot
     mpld3.plugins.connect(fig1, tooltip)
     mpld3.show()
+    # mpld3.save_html(fig1, "brlpa_ahs.html")
 #    plt.show(block=False)  # prevents matplotlib plot from blocking
 #    plt.close('all')
 #    return
