@@ -38,34 +38,38 @@ def plotter1(pdict, statdict):
                 lobf_x.append(player['avg_hit_speed'])
                 lobf_y.append(player['brl_pa'])
                 playerlist.append(player['name'])
+            if player['name'] == "Tuffy Gosewisch":
+                print("x, y, name:", player['avg_hit_speed'], player['brl_pa'], player['name'])
     # end loop
 
     xarray = np.asarray(lobf_x)
     yarray = np.asarray(lobf_y)
     xarray_fa = np.asarray(lobf_fa_x)
     yarray_fa = np.asarray(lobf_fa_y)
-    ax1.scatter(xarray, yarray, c=defcolor)
-    ax1.scatter(xarray_fa, yarray_fa, c=facolor)
+    ax1.scatter(xarray, yarray, c='blue')
+    ax1.scatter(xarray_fa, yarray_fa, marker='D', c='red')
 
 
     # ax1.scatter(xarray_fa, yarray_fa, c=facolor)
     xarray = np.concatenate((xarray, xarray_fa), axis=0)
     yarray = np.concatenate((yarray, yarray_fa), axis=0)
-    playerlist.append(playerlist_fa)
-    scatter = ax1.scatter(xarray, yarray, alpha=0)
+    playerlist = playerlist + playerlist_fa
+    sc1 = ax1.scatter(xarray, yarray, alpha=0)
 
+    # line of best fit
     lr_array = stats.linregress(xarray, yarray)
     xa_lobf = np.linspace(80, 98, 10, dtype=int)
     ya_lobf = lr_array.slope * xa_lobf + lr_array.intercept
-    print(lr_array.rvalue)
+    # print(lr_array.rvalue)  # 0.6739
     ax1.plot(xa_lobf, ya_lobf)
+
     ax1.set_xlabel('Average Hit Speed')
     ax1.set_ylabel('Barrels/PA')
     ax1.set_title('Average Hit Speed Underformers')
 
     # fig1.legend(loc='upper left', scatterpoints=1)
 
-    tooltip = mpld3.plugins.PointLabelTooltip(scatter, labels=playerlist)
+    tooltip = mpld3.plugins.PointLabelTooltip(sc1, labels=playerlist)
     ax1.grid(color='white', linestyle='solid')
     #fig1.set_xlim(0, statdict['max_brl_pa'] + 0.02)
     # fig1.ylim(0, statdict['max_brl_pa'] + 0.02)

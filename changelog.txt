@@ -53,3 +53,5 @@
 - added subset of FanGraphs' leaderboard stats to pdict
 - implementing mpld3 scatter plot
 	- using interactive tooltips
+	- fixed appended lists
+		lists are appended with "+" operator
