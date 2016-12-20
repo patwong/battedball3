@@ -23,39 +23,58 @@ if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
         statdict = pickle.load(sdhandle)
 # end if
 plist1 = []
+falist = []
 for player_name in pdict:
     player = pdict[player_name]
-    plist1.append([player['name'], player['ba'], player['max_hit_speed'] - player['avg_hit_speed']])
+    if player['freeagent']:
+        falist.append([player['name'], player['ba'], player['max_hit_speed'] - player['avg_hit_speed']])
+    else:
+        plist1.append([player['name'], player['ba'], player['max_hit_speed'] - player['avg_hit_speed']])
 
+# normal players
 parr = np.asarray(plist1)
 parr_name = parr[:,0]
 parr_x = np.asarray(parr[:,1], dtype='float64')
 parr_y = np.asarray(parr[:,2], dtype='float64')
 
+# free agents
+fa_arr = np.asarray(falist)
+faa_name = fa_arr[:,0]
+faa_x = np.asarray(fa_arr[:,1], dtype='float64')
+faa_y = np.asarray(fa_arr[:,2], dtype='float64')
 
 trace0 = go.Scatter(
     x = parr_x,
     y = parr_y,
-    name = 'Above',
-    mode = 'markers',
-    marker = dict(
-        size = 10,
-        color = 'rgba(152, 0, 0, .8)',
-        line = dict(
-            width = 2,
-            color = 'rgb(0, 0, 0)'
-        )
-    )
+    name = 'Contracted Players',
+    text=parr_name,
+    mode = 'markers'
+    # marker = dict(
+    #     size = 10,
+    #     color = 'rgba(152, 0, 0, .8)',
+    #     line = dict(
+    #         width = 2,
+    #         color = 'rgb(0, 0, 0)'
+    #     )
+    # )
 )
 
-layout = dict(title = 'Styled Scatter',
+trace1 = go.Scatter(
+    x = faa_x,
+    y = faa_y,
+    name = 'Free Agents',
+    text=faa_name,
+    mode = 'markers'
+)
+
+layout = dict(title = '(Max BB Speed-Avg BB Speed) Versus Batting Average',
               yaxis = dict(zeroline = False),
               xaxis = dict(zeroline = False)
              )
+data = [trace0, trace1]
 
-
-fig = dict(data=trace0, layout=layout)
-plply.iplot(fig, filename='styled-scatter')
+fig = dict(data=data, layout=layout)
+plply.plot(fig, filename='styled-scatter')
 
 
 # exec(open('battedball.py').read())
