@@ -9,8 +9,8 @@ import plotly.graph_objs as go
 pdict = {}
 statdict = {}
 
-pickled_pdict = "pdict.pickle"
-pickled_statdict = "statdict.pickle"
+pickled_pdict = "Data/pdict.pickle"
+pickled_statdict = "Data/statdict.pickle"
 if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
     print('pickled pdict and statdict found')
     with open(pickled_pdict, 'rb') as pdhandle:
@@ -68,13 +68,19 @@ trace1 = go.Scatter(
 )
 
 layout = dict(title = '(Max BB Speed-Avg BB Speed) Versus Batting Average',
-              yaxis = dict(zeroline = False),
-              xaxis = dict(zeroline = False)
-             )
+              yaxis = dict(
+                  zeroline = False,
+                  title= "Max Batted Ball Velocity - Average Batted Ball Velocity (MPH)"
+              ),
+              xaxis = dict(
+                  zeroline = False,
+                  title = "Batting Average"
+              )
+              )
 data = [trace0, trace1]
 
 fig = dict(data=data, layout=layout)
-plply.plot(fig, filename='styled-scatter')
+plply.plot(fig, filename='maxbb_ahs_ba')
 
 
 # exec(open('battedball.py').read())

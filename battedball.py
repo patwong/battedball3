@@ -205,13 +205,13 @@ def main():
     # list is O(n) update, access
 
     # populate pdict
-    json_fname = "playerlist.json"
+    json_fname = "Data/playerlist.json"
 
     # using pickle to store pdict and statdict
     import os.path
     import pickle
-    pickled_pdict = "pdict.pickle"
-    pickled_statdict = "statdict.pickle"
+    pickled_pdict = "Data/pdict.pickle"
+    pickled_statdict = "Data/statdict.pickle"
     if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
         print('pickled pdict and statdict found')
         with open(pickled_pdict, 'rb') as pdhandle:
@@ -225,9 +225,9 @@ def main():
     else:
         print('pickled pdict and statdict file not found')
         parse_and_dict(json_fname)
-        fa_file = "fullfalist.txt"
+        fa_file = "Data/fullfalist.txt"
         merge_fas(fa_file)
-        csvfname = "fgleaders1.csv"         # adding fangraphs leaderboard stats to player stat dictionary
+        csvfname = "Data/fgleaders1.csv"         # adding fangraphs leaderboard stats to player stat dictionary
         if os.path.isfile(csvfname):
             fgstats_to_dict(csvfname)
         else:
@@ -236,7 +236,6 @@ def main():
             pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
         with open(pickled_statdict, 'wb') as sdhandle:
             pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 
     # to check if item is in dict, do this: ITEM in dict_name
