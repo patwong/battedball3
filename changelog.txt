@@ -59,6 +59,10 @@
 	- fixed appended lists
 		lists are appended with "+" operator
 
+2016.12.20
+- using plot.ly instead of mpld3
+
+
 [to add]
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
 - convert files into a class
