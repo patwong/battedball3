@@ -7,8 +7,8 @@ some interactive plots to visualize players' batted ball performance. using data
 
 # plots
 - "barrels/PA" versus average hitting speed scatterplot, [link](https://patwong.github.io/bb/brlpa_ahs.html)
-- (maximum hit speed on a batted ball and average hit speed differential) versus batting average (inspiration from jeff sullivan)
-- more to come, [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
+- (maximum hit speed on a batted ball and average hit speed differential) versus batting average (inspiration from jeff sullivan), [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
+- more to come
 
 # license
 
