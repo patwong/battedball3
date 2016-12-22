@@ -262,6 +262,20 @@ def main():
     # use plotter function to produce scatter plot
     # bbplotter.fa_to_plot(pdict, statdict)
 
+    import bbp3
+    # def plotter(pdict, xax, yax, ptitle, pfilename,lobf):
+    # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
+    # ptitle: string
+    # pfilename: filename
+    # (Max BB Speed-Avg BB Speed) Versus Batting Average'
+    # lobf: True or False
+    # bbp3.plotter(pdict,0,0,0,'maxbb_ahs_ba2')
+    yax = ('brl_pa', 'barrels/PA')
+    xax = ('avg_hit_speed', 'Average Hit Speed')
+    ptitle = yax[1] + " versus " + xax[1]
+    pfilename = "brlpa_ahs"
+    bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True)
+
     # clean directory
     # cleanfiles()
 

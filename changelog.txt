@@ -62,6 +62,10 @@
 2016.12.20
 - using plot.ly instead of mpld3
 
+2016.12.21
+- abstracted away some plotting features in bbp3.plotter features, i.e. the main script specifies the stats to plot on the x/y-axes
+
+
 
 [to add]
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
