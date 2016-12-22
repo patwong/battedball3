@@ -64,6 +64,12 @@
 
 2016.12.21
 - abstracted away some plotting features in bbp3.plotter features, i.e. the main script specifies the stats to plot on the x/y-axes
+- checking type of item (useful for xmin/max values)
+	source: http://stackoverflow.com/questions/4541155/check-if-a-number-is-int-or-float
+- setting random xmin value by popping item from dictionary
+	source: http://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
+- formatted rvalue by getting sigdigs of a float
+	source: https://docs.python.org/3/tutorial/floatingpoint.html
 
 
 
