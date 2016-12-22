@@ -70,7 +70,7 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf):
     # isinstance(value, type) => boolean, i.e. isinstance(0.5, float) => True
     # use this to adjust the xmin/xmax values
     lr_array = stats.linregress(plf_x, plf_y)
-    x_lobf = np.linspace(xmin1-1, xmax1+1, 100, dtype=int)
+    x_lobf = np.linspace(xmin1-1, xmax1+1, 2, dtype=int)
     y_lobf = lr_array.slope * x_lobf + lr_array.intercept
     trace2 = go.Scatter(
         x=x_lobf,

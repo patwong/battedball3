@@ -6,9 +6,9 @@ uses python's numpy, scipy, mpld3 libraries
 some interactive plots to visualize players' batted ball performance. using data from FanGraphs and Baseball Savant (MLB.com)
 
 # plots
-- "barrels/PA" versus average hitting speed scatterplot
+- "barrels/PA" versus average hitting speed scatterplot, [link](https://patwong.github.io/bb/brlpa_ahs.html)
 - (maximum hit speed on a batted ball and average hit speed differential) versus batting average (inspiration from jeff sullivan)
-- more to come
+- more to come, [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
 
 # license
 
