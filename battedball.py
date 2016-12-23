@@ -5,9 +5,10 @@ import json
 # global dictionaries
 # pdict: conversion of json file to dictionary of players and their batted ball numbers
 # statdict: stores certain playerbase stats, i.e. number of players in pdict
+# axesdict: player[key] -> string, where string is full name of the key
 pdict = {}
 statdict = {}
-
+axesdict = {}
 
 # merging list of free agents with dictionary
 # if player is a free agent, change their free agent status to True
@@ -192,7 +193,48 @@ def cleanfiles():
     print('operation complete')
     filedir = os.listdir()
     print("files currently in directory\n" + str(filedir))
-#end cleanfiles()
+# end cleanfiles()
+
+
+def key_to_axes():
+    import os
+    import pickle
+    fname = "Data/key_to_axes.pickle"
+    if os.path.ispath(fname):
+        print(fname, "found")
+        with open(fname, 'rb') as ktahandle:
+            global axesdict
+            axesdict = pickle.load(ktahandle)
+    else:
+        print(fname, "not found")
+        axesdict['fbld'] = "Average FB/LD Exit Velocity (MPH)"
+        axesdict['k%'] = "K%"
+        axesdict['wRC+'] = "wRC+"
+        axesdict['season'] = "Season"
+        axesdict['brl_pa'] = "Barrels/Plate Appearances"
+        axesdict['fWAR'] = "fWAR"
+        axesdict['max_hit_speed'] = "Maximum Exit Velocity (MPH)"
+        axesdict['brl_percent'] = "Barrels/Batted Ball Events"
+        axesdict['avg_distance'] = "Average Distance (ft)"
+        axesdict['slg'] = "SLG"
+        axesdict['max_distance'] = "Maximum Distance (ft)"
+        axesdict['iso_str'] = "Isolated Power"
+        axesdict['ba'] = "Batting Average"
+        axesdict['obp'] = "On-Base Percentage"
+        axesdict['barrels'] = "Total Barreled Balls"
+        axesdict['attempts'] = "Batted Ball Events"
+        axesdict['babip'] = "BABIP"
+        axesdict['avg_hit_speed'] = "Average Exit Velocity (MPH)"
+        axesdict['avg_hr_distance'] = "Average Home Run Distance (ft)"
+        axesdict['min_hit_speed'] = "Minimum Hit Speed (MPH)"
+        axesdict['gb'] = "Average Groundball Exit Velocity (MPH"
+        axesdict['wOBA'] = "wOBA"
+        axesdict['BsR'] = "BsR"
+        axesdict['bb%'] = "bb%"
+        with open(fname, 'wb') as ktahandle:
+            pickle.dump(axesdict, ktahandle, protocol=pickle.HIGHEST_PROTOCOL)
+    # random_player = pdict.popitem()[1]
+# end key_to_axes()
 
 
 # the main machine
@@ -204,7 +246,7 @@ def main():
     # dictionary AO(1) speed to update, access
     # list is O(n) update, access
 
-    # populate pdict
+    # json file used to populate pdict
     json_fname = "Data/playerlist.json"
 
     # using pickle to store pdict and statdict
@@ -212,6 +254,7 @@ def main():
     import pickle
     pickled_pdict = "Data/pdict.pickle"
     pickled_statdict = "Data/statdict.pickle"
+    key_to_axes()
     if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
         print('pickled pdict and statdict found')
         with open(pickled_pdict, 'rb') as pdhandle:
@@ -224,10 +267,10 @@ def main():
             statdict = pickle.load(sdhandle)
     else:
         print('pickled pdict and statdict file not found')
-        parse_and_dict(json_fname)
+        parse_and_dict(json_fname)              # populate pdict
         fa_file = "Data/fullfalist.txt"
-        merge_fas(fa_file)
-        csvfname = "Data/fgleaders1.csv"         # adding fangraphs leaderboard stats to player stat dictionary
+        merge_fas(fa_file)                      # adds free agent status to players
+        csvfname = "Data/fgleaders1.csv"        # adding fangraphs leaderboard stats to player stat dictionary
         if os.path.isfile(csvfname):
             fgstats_to_dict(csvfname)
         else:
@@ -236,6 +279,7 @@ def main():
             pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
         with open(pickled_statdict, 'wb') as sdhandle:
             pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 
     # to check if item is in dict, do this: ITEM in dict_name
@@ -270,11 +314,21 @@ def main():
     # (Max BB Speed-Avg BB Speed) Versus Batting Average'
     # lobf: True or False
     # bbp3.plotter(pdict,0,0,0,'maxbb_ahs_ba2')
-    yax = ('brl_pa', 'barrels/PA')
-    xax = ('avg_hit_speed', 'Average Hit Speed')
-    ptitle = yax[1] + " versus " + xax[1]
-    pfilename = "brlpa_ahs"
-    bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True)
+    # player keys: fbld, k%, wRC+, season, brl_pa, fWAR, max_hit_speed,
+    #   brl_percent, avg_distance, slg, max_distance, iso_str, ba, obp
+    #   barrels, attempts, babip, avg_hit_speed, avg_hr_distance, min_hit_speed
+    #   gb, wOBA, BsR, bb%
+    yname = 'brl_pa'
+    xname = 'avg_hit_speed'
+    if xname in axesdict and yname in axesdict:
+        yax = (yname, axesdict[yname])
+        xax = (xname, axesdict[xname])
+        ptitle = yax[1] + " versus " + xax[1]
+        pfilename = yname + "_vs_" + xname
+        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True)
+    else:
+        print("enter correct player stat!")
+
 
     # clean directory
     # cleanfiles()

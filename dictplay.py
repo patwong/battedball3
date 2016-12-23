@@ -1,4 +1,5 @@
 # for cli debugging purposes
+# opens the dictionary files stored in pickle files
 import pickle
 import os
 pdict = {}

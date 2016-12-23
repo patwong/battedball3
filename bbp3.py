@@ -102,6 +102,6 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf):
         data = [trace0, trace1]
 
     fig = dict(data=data, layout=layout)
-    plply.plot(fig, filename=pfilename)
+    plply.offline.plot(fig, filename=pfilename)
     print(str(lr_array.rvalue), str(lr_array.slope), str(lr_array.intercept))
 # end plotter
