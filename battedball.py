@@ -323,14 +323,14 @@ def main():
     #   brl_percent, avg_distance, slg, max_distance, iso_str, ba, obp
     #   barrels, attempts, babip, avg_hit_speed, avg_hr_distance, min_hit_speed
     #   gb, wOBA, BsR, bb%
-    yname = 'fbld'
-    xname = 'brl_pa'
+    yname = 'iso_str'
+    xname = 'avg_hit_speed'
     if xname in axesdict and yname in axesdict:
         yax = (yname, axesdict[yname])
         xax = (xname, axesdict[xname])
         ptitle = yax[1] + " versus " + xax[1]
         pfilename = yname + "_vs_" + xname + ".html"
-        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "scatter", (True, False))
+        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "hist", (True, True))
     else:
         print("enter correct player stat!")
 

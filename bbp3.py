@@ -127,23 +127,27 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf, gtype, xy0):
         fig = dict(data=data, layout=layout)
         plotly.offline.plot(fig, filename=pfilename)
 
+        # printing out the linear regression values
+        print("rval:", str(lr_array.rvalue), "slope:", str(lr_array.slope), "y-intercept:", str(lr_array.intercept))
 
         #plotly.offline.plot({
         #    "data": [go.Scatter(x=parr_x, y=parr_y)],
         #    "layout": go.Layout(title="test graph")
         #})
+
+
     elif gtype == "hist":
         # HISTOGRAM CODE!!!!!!!
-        numbins = int(np.ceil((xmax1 - xmin1)/2))
-        l1 = []
-        for player_name in pdict:
-            player = pdict[player_name]
-            tr0 = go.Scatter(
-                x = player[xax[0]]
-            )
-        tr1 = go.Histogram(x=plf_x,  # histnorm='probability density',
+        binsize = (xmax1 - xmin1)/10
+        ll1 = [[] for x in range(10)]
+        # for player_name in pdict:
+        #     player = pdict[player_name]
+        #     tr0 = go.Scatter(
+        #         x = player[xax[0]]
+        #     )
+        tr1 = go.Histogram(x=plf_x,  histnorm='probability density',
                            text=plf_arr_name, name="velo buckets",
-                           xbins=dict(start=np.min(plf_x), size=1.83, end=np.max(plf_x))
+                           xbins=dict(start=np.min(plf_x), size=binsize, end=np.max(plf_x))
                            )
         layout1 = dict(
             title="helo",
@@ -164,7 +168,4 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf, gtype, xy0):
 
         # END HISTOGRAM CODE!!!!!!!!
     # end if
-
-    # printing out the linear regression values
-    print("rval:", str(lr_array.rvalue), "slope:", str(lr_array.slope), "y-intercept:", str(lr_array.intercept))
 # end plotter
