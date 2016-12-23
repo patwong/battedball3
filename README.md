@@ -3,6 +3,8 @@ testing python math libs with 2016 mlb batted ball data (python3 version)
 
 uses python's numpy, scipy, plotly, and mpld3 libraries
 
+battedball.py is the parser and a script in main() that sends data to the plotter. bbp2 uses the mpld3 libary, bbp3 uses plotly.
+
 # what it does
 some interactive plots to visualize players' batted ball performance. using data from FanGraphs and Baseball Savant (MLB.com)
 
