@@ -200,7 +200,7 @@ def key_to_axes():
     import os
     import pickle
     fname = "Data/key_to_axes.pickle"
-    if os.path.ispath(fname):
+    if os.path.isfile(fname):
         print(fname, "found")
         with open(fname, 'rb') as ktahandle:
             global axesdict
@@ -249,6 +249,7 @@ def main():
     # json file used to populate pdict
     json_fname = "Data/playerlist.json"
 
+    # this block runs the parsers or retrieves the dicts from pickle files
     # using pickle to store pdict and statdict
     import os.path
     import pickle
@@ -307,25 +308,26 @@ def main():
     # bbplotter.fa_to_plot(pdict, statdict)
 
     import bbp3
-    # def plotter(pdict, xax, yax, ptitle, pfilename,lobf):
+    # def plotter(pdict, xax, yax, ptitle, pfilename,lobf,type):
     # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
     # ptitle: string
     # pfilename: filename
     # (Max BB Speed-Avg BB Speed) Versus Batting Average'
     # lobf: True or False
+    # type: "scatter", "hist"
     # bbp3.plotter(pdict,0,0,0,'maxbb_ahs_ba2')
     # player keys: fbld, k%, wRC+, season, brl_pa, fWAR, max_hit_speed,
     #   brl_percent, avg_distance, slg, max_distance, iso_str, ba, obp
     #   barrels, attempts, babip, avg_hit_speed, avg_hr_distance, min_hit_speed
     #   gb, wOBA, BsR, bb%
-    yname = 'brl_pa'
+    yname = 'iso_str'
     xname = 'avg_hit_speed'
     if xname in axesdict and yname in axesdict:
         yax = (yname, axesdict[yname])
         xax = (xname, axesdict[xname])
         ptitle = yax[1] + " versus " + xax[1]
-        pfilename = yname + "_vs_" + xname
-        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True)
+        pfilename = yname + "_vs_" + xname + ".html"
+        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True,"hist")
     else:
         print("enter correct player stat!")
 
