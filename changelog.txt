@@ -71,7 +71,16 @@
 - formatted rvalue by getting sigdigs of a float
 	source: https://docs.python.org/3/tutorial/floatingpoint.html
 
+2016.12.22
+- updated README and project webpage
+	- published three graphs (mpld3, plotly x2)
 
+2016.12.23
+- created axesdict - dictionary that maps player keys to their full string value
+- bbp3:
+	- added a check to see if x or y-values are allowed to be 0
+	- separating histogram and scatter plot codes
+		- include a if-statement to see what kind of plot is desired
 
 [to add]
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)

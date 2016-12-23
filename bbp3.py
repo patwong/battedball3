@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 
 
 # successor to bbp2 - uses plotly instead of mpld3
-def plotter(pdict, xax, yax, ptitle, pfilename, lobf,gtype):
+def plotter(pdict, xax, yax, ptitle, pfilename, lobf, gtype, xy0):
     g_types = ["scatter", "hist"]
     if not(gtype in g_types):
         print('you provided a wrong graph type!')
@@ -22,7 +22,17 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf,gtype):
     xmin1 = pdict.popitem()[1][xax[0]]
     for player_name in pdict:
         player = pdict[player_name]
-        if player[yax[0]] > 0:
+
+        # if xy0[0] is true, then x is allowed to be 0
+        # if xy0[1] is true, then y is allowed to be 0
+        # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
+        xy2 = [True, True]
+        if not(xy0[0]):
+            xy2[0] = player[xax[0]] > 0
+        if not(xy0[1]):
+            xy2[1] = player[yax[0]] > 0
+
+        if xy2[0] and xy2[1]:   # if player[yax[0]] > 0 and player[xax[0]] > 0:
             if player['freeagent']:
                 falist.append([player['name'], player[xax[0]], player[yax[0]]])
             else:
@@ -89,7 +99,7 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf,gtype):
             x=x_lobf,
             y=y_lobf,
             name='Line of Best Fit',
-            text=faa_name,
+            #text=faa_name,
             mode='lines'
         )
 
@@ -115,7 +125,7 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf,gtype):
             data = [trace0, trace1]
 
         fig = dict(data=data, layout=layout)
-        # plotly.offline.plot(fig, filename=pfilename)
+        plotly.offline.plot(fig, filename=pfilename)
 
 
         #plotly.offline.plot({
@@ -126,7 +136,8 @@ def plotter(pdict, xax, yax, ptitle, pfilename, lobf,gtype):
         # HISTOGRAM CODE!!!!!!!
         numbins = int(np.ceil((xmax1 - xmin1)/2))
         l1 = []
-        for player in pdict:
+        for player_name in pdict:
+            player = pdict[player_name]
             tr0 = go.Scatter(
                 x = player[xax[0]]
             )
