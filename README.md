@@ -1,5 +1,6 @@
 # battedball3
 testing python math libs with 2016 mlb batted ball data (python3 version)
+
 uses python's numpy, scipy, plotly, and mpld3 libraries
 
 # what it does
@@ -7,7 +8,7 @@ some interactive plots to visualize players' batted ball performance. using data
 
 # plots
 - "barrels/PA" versus average hitting speed scatterplot, [link](https://patwong.github.io/bb/brlpa_ahs.html)
-- (maximum hit speed on a batted ball and average hit speed differential) versus batting average (inspiration from jeff sullivan), [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
+- (maximum hit speed and average hit speed differential) versus batting average (inspiration from jeff sullivan), [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
 - all graphs can be found on my project page [here!!](https://patwong.github.io/bb_project_page.html)
 - a few of thoughts can be found in the above project page link
 - more graphs to come
