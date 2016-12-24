@@ -311,7 +311,9 @@ def main():
 
     import bbp3
     # def plotter(pdict, xax, yax, ptitle, pfilename,lobf,type, xy0):
-    # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
+    # xax: (pdict val, x-axis title)
+    # yax (scatter): (pdict val, y-axis title)
+    # yax (hist): string -> to label each bin
     # ptitle: string
     # pfilename: filename
     # (Max BB Speed-Avg BB Speed) Versus Batting Average'
@@ -325,12 +327,20 @@ def main():
     #   gb, wOBA, BsR, bb%
     yname = 'iso_str'
     xname = 'avg_hit_speed'
+    gtype = "hist"
     if xname in axesdict and yname in axesdict:
         yax = (yname, axesdict[yname])
         xax = (xname, axesdict[xname])
-        ptitle = yax[1] + " versus " + xax[1]
-        pfilename = yname + "_vs_" + xname + ".html"
-        bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "hist", (True, True))
+        if gtype == "scatter":
+            ptitle = yax[1] + " versus " + xax[1]
+            pfilename = yname + "_vs_" + xname + ".html"
+        # bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "scatter", (True, True))     # scatter test
+        if gtype == "hist":
+            yname = "wRC+"
+            ptitle = xax[1] + " histogram"
+            pfilename = xax[0] + "_histogram.html"
+            bbp3.plotter(pdict, xax, yname, ptitle, pfilename, True, "hist", (True, True))    # hist test
+
     else:
         print("enter correct player stat!")
 
