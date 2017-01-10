@@ -237,13 +237,44 @@ class bbclass:
 
     # end key_to_axes()
 
+    # given player name, list his stats
+    def find(self, pname):
+        if pname in self.pdict:
+            player = self.pdict[pname]
+            i = 0
+            output_str = []
+            col_len = 0
+            for keys in player:
+                if isinstance(player[keys], float):
+                    keyvalue = format(player[keys], '.2f')
+                else:
+                    keyvalue = player[keys]
+                key_plus_stats = keys + ": " + str(keyvalue)
+                kps_len = len(key_plus_stats)
+                if kps_len > col_len:
+                    col_len = kps_len
+            col_len += 2
+            for keys in player:
+                if isinstance(player[keys], float):
+                    keyvalue = format(player[keys], '.2f')
+                else:
+                    keyvalue = player[keys]
+                output_str.append(keys + ": " + str(keyvalue))
+                i += 1
+                if i == 3:
+                    # print(output_str)
+                    print("".join(word.ljust(col_len) for word in output_str))
+                    output_str = []
+                    i = 0
+            if output_str:
+                print("".join(word.ljust(col_len) for word in output_str))
+        else:
+            print("player not found: " + pname)
 
+    # end findplayer
     # other initialization routine
+    # checks if the source files exist and populates the dictionaries
     def bbparser(self):
-        """
-        the other initialization routine
-        checks if the source files exist and populates the dictionaries
-        """
         import os.path
         import sys
         import pickle
