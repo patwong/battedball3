@@ -121,14 +121,14 @@ class bbclass:
         import csv
         import os.path
 
-        csvfile = open(csv_fname, 'rt', encoding='utf-8')
+        csvfile = open(csv_fname, 'rt', encoding='utf-8')   # safer to have script determine csv's encoding
         csvreader = csv.reader(csvfile)
-        notindict = "playersnotindict.txt"
+        notindict = "Data/playersnotindict.txt"
+        f1 = open(notindict, 'a')
         nic = 0
         if not (os.path.isfile(notindict)):
             nic = 1  # if nic == 1, file only written once
             print("creating file that contains players not in dictionary")
-            f1 = open(notindict, 'a')
             f1.write("players not in dictionary:\n")
 
         for row in csvreader:
@@ -166,14 +166,12 @@ class bbclass:
                 player['wRC+'] = wRCp
                 player['BsR'] = BsR
                 player['fWAR'] = fWAR
-
+            # if player not found, add his name to the file
             elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
                 to_out = row[0] + '\n'
                 f1.write(to_out)
-
         # for safety, close the file
-        if nic == 1:
-            f1.close()
+        f1.close()
     # end adding_ba_to_dict
 
     # remove all auxiliary files created by my program
@@ -233,8 +231,6 @@ class bbclass:
             self.axesdict['bb%'] = "bb%"
             with open(fname, 'wb') as ktahandle:
                 pickle.dump(self.axesdict, ktahandle, protocol=pickle.HIGHEST_PROTOCOL)
-                # random_player = pdict.popitem()[1]
-
     # end key_to_axes()
 
     # given player name, list his stats
@@ -270,23 +266,24 @@ class bbclass:
                 print("".join(word.ljust(col_len) for word in output_str))
         else:
             print("player not found: " + pname)
-
     # end findplayer
-    # other initialization routine
+
+    # second initialization routine: calls the parsers
     # checks if the source files exist and populates the dictionaries
     def bbparser(self):
         import os.path
         import sys
         import pickle
 
-        # source files located in the Data directory
-        # json file used to populate pdict
-        # list of free agent players for the current offseason
-        # fangraphs leaderboard stats
+        # source files located in the Data directory:
+        # 1. json file used to populate pdict
+        # 2. list of free agent players for the current offseason
+        # 3. fangraphs leaderboard stats
         json_fname = "Data/playerlist.json"
         fa_file = "Data/fullfalist.txt"
         csvfname = "Data/fgleaders1.csv"
 
+        # exit if source files not found
         if not(os.path.isfile(csvfname)):
             print("csv not found")
             sys.exit(1)
@@ -297,11 +294,11 @@ class bbclass:
             print("free agent list not found")
             sys.exit(1)
 
-        # this block runs the parsers or retrieves the dicts from pickle files
+        # runs the parsers or retrieves the dicts from pickle files
         # using pickle to store pdict and statdict
         pickled_pdict = "Data/pdict.pickle"
         pickled_statdict = "Data/statdict.pickle"
-        self.key_to_axes()   # creates the shorthands for axes creation
+        self.key_to_axes()   # creates the shorthands for axes creation - has its own pickle checker
         if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
             print('pickled pdict and statdict found')
             with open(pickled_pdict, 'rb') as pdhandle:
@@ -310,9 +307,9 @@ class bbclass:
                 self.statdict = pickle.load(sdhandle)
         else:
             print('pickled pdict and statdict file not found')
-            self.parse_and_dict(json_fname)  # populate pdict
+            self.parse_and_dict(json_fname)     # populate pdict
             self.fgstats_to_dict(csvfname)
-            self.merge_fas(fa_file)  # adds free agent status to players
+            self.merge_fas(fa_file)             # adds free agent status to players
             with open(pickled_pdict, 'wb') as pdhandle:
                 pickle.dump(self.pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
             with open(pickled_statdict, 'wb') as sdhandle:

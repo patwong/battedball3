@@ -122,9 +122,9 @@ def fgstats_to_dict(csv_fname):
     import os.path
 
     # csvfile = open(csv_fname, 'rt', encoding='us-ascii')
-    csvfile = open(csv_fname, 'rt', encoding='utf-8')
+    csvfile = open(csv_fname, 'rt', encoding='utf-8')   # safer to have script determine csv's encoding
     csvreader = csv.reader(csvfile)
-    notindict = "playersnotindict.txt"
+    notindict = "Data/playersnotindict.txt"
     nic = 0
     if not(os.path.isfile(notindict)):
         nic = 1     # if nic == 1, file only written once
@@ -167,14 +167,13 @@ def fgstats_to_dict(csv_fname):
             player['wRC+'] = wRCp
             player['BsR'] = BsR
             player['fWAR'] = fWAR
-
+        # if player not found, add his name to the file
         elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
             to_out = row[0] + '\n'
             f1.write(to_out)
 
     # for safety, close the file
-    if nic == 1:
-        f1.close()
+    f1.close()
 # end adding_ba_to_dict
 
 # remove all auxiliary files created by my program
