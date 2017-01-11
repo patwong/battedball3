@@ -1,4 +1,4 @@
-class bbclass:
+class bb3class:
     """
     modularizes the battedball method collection into a class object
     bbclass can only be defined if the valid json, csv, and txt files
@@ -6,10 +6,10 @@ class bbclass:
     """
 
     def __init__(self):
-        self.bbparser()
         self.pdict = {}
         self.statdict = {}
         self.axesdict = {}
+        self.bbparser()
 
     # merging list of free agents with dictionary
     # if player is a free agent, change their free agent status to True
@@ -178,8 +178,9 @@ class bbclass:
     # list: playersnotindict.txt, pdict.pickle, statdict.pickle
     def cleanfiles(self):
         import os
+        os.chdir('Data')
         filedir = os.listdir()
-        print("files currently in directory\n" + str(filedir))
+        print("source files currently in directory\n" + str(filedir))
         print("deleting all pickle files + playersnotindict.txt")
         # remove pickle files
         for f in filedir:
@@ -190,6 +191,7 @@ class bbclass:
         print('operation complete')
         filedir = os.listdir()
         print("files currently in directory\n" + str(filedir))
+        filedir = os.chdir('..')
     # end cleanfiles()
 
 
@@ -314,5 +316,311 @@ class bbclass:
                 pickle.dump(self.pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
             with open(pickled_statdict, 'wb') as sdhandle:
                 pickle.dump(self.statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+    # end parser
+
+    # produces scatter plots
+    def scatter(self, xval, yval, xy0):
+        # xval: stat to be plotted on x-axis
+        # yval: stat to be plotted on y-axis
+        # xy0:
+        # if xy0[0] is true, then x is allowed to be 0
+        # if xy0[1] is true, then y is allowed to be 0
+        # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
+
+        if xval in self.axesdict:
+            xtitle = self.axesdict[xval]
+        else:
+            print("xvalue stat not found:", xval)
+            return
+            # sys.exit(1)
+        if yval in self.axesdict:
+            ytitle = self.axesdict[yval]
+        else:
+            print("[Exit Error]yvalue stat not found:", yval)
+            return
+            # sys.exit(1)
+        import numpy as np
+        from scipy import stats
+        import plotly
+        import plotly.graph_objs as go
+
+        ptitle = ytitle + " versus " + xtitle
+        pfilename = yval + "_vs_" + xval + ".html"
+        plist_full = []
+        plist1 = []
+        falist = []
+        xmax1 = 0.0
+        xmaxname = ""
+        xmin1 = 0
+        xmin1_c = 1
+        for player_name in self.pdict:
+            player = self.pdict[player_name]
+
+            # set the first dictionary value as the first min value
+            if xmin1_c == 1:
+                xmin1 = player[xval]
+                xmin1_c = 0
+            # if xy0[0] is true, then x is allowed to be 0
+            # if xy0[1] is true, then y is allowed to be 0
+            # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
+            xy2 = [True, True]
+            if not (xy0[0]):
+                xy2[0] = player[xval] > 0
+            if not (xy0[1]):
+                xy2[1] = player[yval] > 0
+
+            if xy2[0] and xy2[1]:  # if player[yax[0]] > 0 and player[xax[0]] > 0:
+                if player['freeagent']:
+                    falist.append([player['name'], player[xval], player[yval]])
+                else:
+                    plist1.append([player['name'], player[xval], player[yval]])
+                plist_full.append([player['name'], player[xval], player[yval]])
+
+                if player[xval] > xmax1:
+                    xmax1 = player[xval]
+                    xmaxname = player['name']
+                if player[xval] < xmin1:
+                    xmin1 = player[xval]
+        # print(xmaxname, xmax1)    # checking who's the x-max value
+
+        # normal players
+        parr = np.asarray(plist1)
+        parr_name = parr[:, 0]
+        parr_x = np.asarray(parr[:, 1], dtype='float64')
+        parr_y = np.asarray(parr[:, 2], dtype='float64')
+
+        # free agents
+        fa_arr = np.asarray(falist)
+        faa_name = fa_arr[:, 0]
+        faa_x = np.asarray(fa_arr[:, 1], dtype='float64')
+        faa_y = np.asarray(fa_arr[:, 2], dtype='float64')
+
+        # full player list
+        plf_arr = np.asarray(plist_full)
+        # plf_arr_name = plf_arr[:, 0]
+        plf_x = np.asarray(plf_arr[:, 1], dtype='float64')
+        plf_y = np.asarray(plf_arr[:, 2], dtype='float64')
+
+        # plotting the contracted players
+        trace0 = go.Scatter(
+            x=parr_x,
+            y=parr_y,
+            name='Contracted Players',
+            text=parr_name,
+            mode='markers'
+        )
+
+        # plotting the free agents
+        trace1 = go.Scatter(
+            x=faa_x,
+            y=faa_y,
+            name='Free Agents',
+            text=faa_name,
+            mode='markers'
+        )
+
+        # line of best fit code
+        # isinstance(value, type) => boolean, i.e. isinstance(0.5, float) => True
+        # use this to adjust the xmin/xmax values
+        lr_array = stats.linregress(plf_x, plf_y)
+        if (xmax1 - xmin1) > 1:
+            xmin1 -= 1
+            xmax1 += 1
+        else:
+            xmin1 -= 0.05
+            xmax1 += 0.05
+        # print("xmin1:", xmin1, "xmax1:", xmax1)
+        x_lobf = np.linspace(xmin1, xmax1, 2)
+        y_lobf = lr_array.slope * x_lobf + lr_array.intercept
+        trace2 = go.Scatter(
+            x=x_lobf,
+            y=y_lobf,
+            name='Line of Best Fit',
+            # text=faa_name,
+            mode='lines'
+        )
+
+        # put the correlation coefficient in the title
+        rvstring = format(lr_array.rvalue, '.2f')
+        ptitle = ptitle + " (rvalue: " + rvstring + ")"
+        layout = dict(title=ptitle,
+                      yaxis=dict(
+                          zeroline=False,
+                          title=ytitle
+                      ),
+                      xaxis=dict(
+                          zeroline=False,
+                          title=xtitle
+                      )
+                      )
+
+        # trace0: contracted players, trace1: free agents, trace2: line of best fit
+
+        # plots line of best fit if there is moderate or better correlation
+        if lr_array.rvalue > 0.3 or lr_array.rvalue < -0.3:     # positive or negative correlation
+            data = [trace0, trace1, trace2]
+        else:
+            data = [trace0, trace1]
+
+        fig = dict(data=data, layout=layout)
+        plotly.offline.plot(fig, filename=pfilename)
+
+        # printing out the linear regression values
+        print("rval:", str(lr_array.rvalue), ", slope:", str(lr_array.slope), ", y-intercept:",
+              str(lr_array.intercept))
+    # end scatter
+
+    # uses pandas
+    def hist1(self, xval, yval):
+        if xval in self.axesdict:
+            xtitle = self.axesdict[xval]
+        else:
+            print("xvalue stat not found:", xval)
+            return
+            # sys.exit(1)
+        if yval in self.axesdict:
+            ytitle = self.axesdict[yval]
+        else:
+            print("[Exit Error]yvalue stat not found:", yval)
+            return
+        import numpy as np
+        import pandas as pd
+        xlist = []
+        ylist = []
+        for player_name in self.pdict:
+            player = self.pdict[player_name]
+            xarray.append(player[xval])
+    # end hist1
+
+    # successor to bbp2 - uses plotly instead of mpld3
+    def hist(self, xval, yval, xy0):
+        if xval in self.axesdict:
+            xtitle = self.axesdict[xval]
+        else:
+            print("xvalue stat not found:", xval)
+            return
+            # sys.exit(1)
+        if yval in self.axesdict:
+            ytitle = self.axesdict[yval]
+        else:
+            print("[Exit Error]yvalue stat not found:", yval)
+            return
+            # sys.exit(1)
+        import numpy as np
+        from scipy import stats
+        import plotly
+        import plotly.graph_objs as go
+        yname = "wRC+"
+        ptitle = xtitle + " histogram"
+        pfilename = xval + "_histogram.html"
+
+        # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
+
+        plist_full = []
+        plist1 = []
+        falist = []
+        xmax1 = 0.0
+        xmaxname = ""
+        xmin1 = 0
+        xmin1_c = 1
+
+        # HISTOGRAM CODE!!!!!!!
+        for player_name in self.pdict:
+            player = self.pdict[player_name]
+            if xmin1_c == 1:
+                xmin1 = player[xval]
+                xmin1_c = 0
+
+            # if xy0[0] is true, then x is allowed to be 0
+            # if xy0[1] is true, then y is allowed to be 0
+            # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
+            xy2 = [True, True]
+            if not (xy0[0]):
+                xy2[0] = player[xval] > 0
+            if not (xy0[1]):
+                xy2[1] = player[yval] > 0
+
+            if xy2[0] and xy2[1]:
+                if player['freeagent']:
+                    falist.append([player['name'], player[xval]])
+                else:
+                    plist1.append([player['name'], player[xval]])
+                plist_full.append([player['name'], player[xval]])
+                if player[xval] > xmax1:
+                    xmax1 = player[xval]
+                    xmaxname = player['name']
+                if player[xval] < xmin1:
+                    xmin1 = player[xval]
+
+        # using 10 bins for the histogram
+        numbins = 10
+        binsize = (xmax1 - xmin1) / numbins
+
+        # list 1 for the 10th percentile, 2 for the 20th, etc
+        bin_of_bins = [[] for x in range(numbins)]
+
+        # get the average wRC+ for each bin
+        for player_name in self.pdict:
+            player = self.pdict[player_name]
+            bin_finder = xmin1
+            for x in range(0, numbins):
+                bin_finder += binsize
+                if player[xval] < bin_finder:
+                    bin_of_bins[x - 1].append(player[yval])
+                    break
+
+        # getting the stdev, mean of each bin
+        bin_stats = []
+        c = 0
+        for bin_list in bin_of_bins:
+            bin_array = np.asarray(bin_list)
+            bin_mean = np.mean(bin_array)
+            bin_sd = np.std(bin_array)
+            bin_stats.append(
+                "Average wRC+: " + format(bin_mean, '.2f') + "\nStandard Dev: " + format(bin_sd, '.2f'))
+        bin_stats_array = np.asarray(bin_stats)
+
+        # create the arrays to plot
+        plf_arr = np.asarray(plist_full)
+        # plf_arr_name = plf_arr[:, 0]
+        plf_x = np.asarray(plf_arr[:, 1], dtype='float64')
+
+        # plot the histogram
+        tr1 = go.Histogram(x=plf_x,
+                           # histnorm='probability density',
+                           text='hi',  # text= bin_stats_array,
+                           # hoverinfo="text",
+                           # name="velo buckets",
+                           autobinx=False,
+                           xbins=dict(start=np.min(plf_x), size=binsize, end=np.max(plf_x)),
+                           # marker=dict(colorbar=dict(
+                           #     tickmode='array',
+                           #     ticktext=bin_stats_array
+                           # )),
+                           opacity=0.5
+                           )
+        layout1 = dict(
+            title=ptitle,
+            autosize=True,
+            bargap=0.015,
+            height=600,
+            width=700,
+            hovermode='x',
+            xaxis=dict(
+                autorange=True,
+                title=xtitle,
+                zeroline=False),
+            yaxis=dict(
+                autorange=True,
+                title='count',
+                showticklabels=True,
+            ))
+        fig1 = dict(data=[tr1], layout=layout1)
+        plotly.offline.plot(fig1, filename=pfilename)
+        print("length of x:", str(len(plf_x)))
+        print(xtitle)
+        print(np.min(plf_x), np.max(plf_x))
+        # END HISTOGRAM CODE!!!!!!!!
+        # end plotter
 
 # end bbclass

@@ -1,4 +1,4 @@
-import bbclass
+import bb3class
 # def plotter(pdict, xax, yax, ptitle, pfilename,lobf,type, xy0):
 # xax: (pdict val, x-axis title)
 # yax (scatter): (pdict val, y-axis title)
@@ -15,28 +15,28 @@ import bbclass
 #   barrels, attempts, babip, avg_hit_speed, avg_hr_distance, min_hit_speed
 #   gb, wOBA, BsR, bb%
 
-x1 = bbclass()
+x1 = bb3class.bb3class()
 yname = 'iso_str'
 xname = 'avg_hit_speed'
 gtype = "hist"
-if xname in axesdict and yname in axesdict:
-    yax = (yname, axesdict[yname])
-    xax = (xname, axesdict[xname])
-    if gtype == "scatter":
-        ptitle = yax[1] + " versus " + xax[1]
-        pfilename = yname + "_vs_" + xname + ".html"
-    # bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "scatter", (True, True))     # scatter test
-    if gtype == "hist":
-        yname = "wRC+"
-        ptitle = xax[1] + " histogram"
-        pfilename = xax[0] + "_histogram.html"
-        bbp3.plotter(pdict, xax, yname, ptitle, pfilename, True, "hist", (True, True))    # hist test
-
-else:
-    print("enter correct player stat!")
+x1.scatter(xname,yname,(True, True))
+# if xname in axesdict and yname in axesdict:
+#     yax = (yname, axesdict[yname])
+#     xax = (xname, axesdict[xname])
+#     if gtype == "scatter":
+#         ptitle = yax[1] + " versus " + xax[1]
+#         pfilename = yname + "_vs_" + xname + ".html"
+#     # bbp3.plotter(pdict, xax, yax, ptitle, pfilename, True, "scatter", (True, True))     # scatter test
+#     if gtype == "hist":
+#         yname = "wRC+"
+#         ptitle = xax[1] + " histogram"
+#         pfilename = xax[0] + "_histogram.html"
+#         bbp3.plotter(pdict, xax, yname, ptitle, pfilename, True, "hist", (True, True))    # hist test
+# else:
+#     print("enter correct player stat!")
 
 # implements "main" from battedball.py
-x1.scatter(xname, yname, gtype)
+
 x1.cleanfiles() # clears all the pickle files
 x1.__init__()   # after clearing the pickles, reinitialize the class with fresh pickle files + dicts
 
