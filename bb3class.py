@@ -471,7 +471,7 @@ class bb3class:
     # end scatter
 
     # uses pandas
-    def hist1(self, xval, yval):
+    def hist1(self, xval, yval, num_bins):
         if xval in self.axesdict:
             xtitle = self.axesdict[xval]
         else:
@@ -487,9 +487,35 @@ class bb3class:
         import pandas as pd
         xlist = []
         ylist = []
+        plist_full = []
+        plist1 = []
+        xmax1 = 0.0
+        xmin1 = 0
+        xmin1_c = 1
+
         for player_name in self.pdict:
+            if xmin1_c == 1:
+                xmin1 = player[xval]
+                xmin1_c = 0
             player = self.pdict[player_name]
-            xarray.append(player[xval])
+            xlist.append(player[xval])
+            ylist.append(player[yval])
+            if player[xval] > xmax1:
+                xmax1 = player[xval]    # need max value to determine bin size
+            if player[xval] < xmin1:
+                xmin1 = player[xval]    # need min value to determine bin size
+        # end loop
+
+        raw_data = {xval: xlist, yval: ylist}
+        pandaframe1 = pd.DataFrame(raw_data, columns=[xval, yval])
+        binsize = (xmax1 - xmin1) / num_bins
+        bin_list = []
+        bl_c = xmin1
+        for i in range(num_bins+1):
+            bin_list.append(bl_c)
+            bl_c += binsize
+
+
     # end hist1
 
     # successor to bbp2 - uses plotly instead of mpld3
@@ -507,7 +533,6 @@ class bb3class:
             return
             # sys.exit(1)
         import numpy as np
-        from scipy import stats
         import plotly
         import plotly.graph_objs as go
         yname = "wRC+"

@@ -88,6 +88,19 @@
 - pushed the initializing/parsing routines to a class
 - moved "main" to a testscript (class_test_script.py)
 
+
+2017.10.11
+- moved scatter to separate function of class module
+- moved histogram to separate function of class module
+	- using pandas to sort list/array
+		- instead of manually binning them, using pandas dataframe "cut" command to add attribute
+			- bins are manually determined
+		source: http://chrisalbon.com/python/pandas_binning_data.html
+		- use pandas to count the number of elements with desired "x-val", get the columns average "y-val"
+			- i.e. x-val of avg hit speed => binning by AHS, y-val of wRC+ => get each column's average wRC+
+		- use statsdict's total player number to get frequency by percentage rather than by discrete value
+	- using plotly to have hoverable info tips
+
 		
 [to add]
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
