@@ -471,65 +471,77 @@ class bb3class:
 
     # uses pandas
     def hist1(self, xval, yval, num_bins):
+        # sanity checks
         if xval in self.axesdict:
             xtitle = self.axesdict[xval]
         else:
             print("xvalue stat not found:", xval)
             return
-            # sys.exit(1)
         if yval in self.axesdict:
             ytitle = self.axesdict[yval]
         else:
-            print("[Exit Error]yvalue stat not found:", yval)
+            print("yvalue stat not found:", yval)
             return
+        if not(isinstance(num_bins, int)):
+            print("enter a positive integer number of bins!!!")
+            return
+        elif num_bins < 2:
+            print("please enter a valid number of bins (#bins > 1)")
+            return
+
         import numpy as np
         import pandas as pd
         xlist = []
         ylist = []
         plist_full = []
         plist1 = []
-        xmax1 = 0.0
-        xmin1 = 0
-        xmin1_c = 1
 
         for player_name in self.pdict:
             player = self.pdict[player_name]
-            # to get a potential non-zero min value
-            if xmin1_c == 1:
-                xmin1 = player[xval]
-                xmin1_c = 0
-
             xlist.append(player[xval])
             ylist.append(player[yval])
-
-            # need max/min value to determine bin size
-            if player[xval] > xmax1:
-                xmax1 = player[xval]
-            if player[xval] < xmin1:
-                xmin1 = player[xval]
         # end loop
 
         # put xlist and ylist into pandas' dataframe - pandas is very useful!!
         raw_data = {xval: xlist, yval: ylist}
         pandaframe1 = pd.DataFrame(raw_data, columns=[xval, yval])
 
+        #get min/max value for bin sizes
+        xmax1 = float((pandaframe1.describe()).loc['max', xval])
+        xmin1 = float((pandaframe1.describe()).loc['min', xval])
+
         # bin processing
         binsize = (xmax1 - xmin1) / num_bins
         bin_list = []               # list of bin ranges
         bin_list_names = []         # list of bin names, i.e. bin0,...,binN
+        bln_range = []              # list of bin names, by range (x0, x1], (x1, x2],..., (xn-1, xn]
         bl_c = xmin1
         for i in range(num_bins):
             bl_str = "bin" + str(i)
             bin_list.append(round(bl_c, 2))       # round to two sigfigs
+            bln_str = "(" + str(round(bl_c, 2))
             bin_list_names.append(bl_str)
             bl_c += binsize
+            bln_str += ", " + str(round(bl_c, 2)) + "]"
+            bln_range.append(bln_str)
         bin_list.append(round(bl_c, 2))             # add the "max" to the bin, adjusted for stupid float vals
-        # adjust min bin by lowering its threshold, since binned by rightmost (see docs), i.e. (x1,x2]
-        bin_list[0] = round(bin_list[0] - np.ceil(bin_list[0]*0.01), 2)
-        # bin values
+
+        # adjust min bin by lowering its threshold, since binned by rightmost, i.e. (x1,x2] (see docs)
+        bin_list[0] = float(bin_list[0] - np.ceil(bin_list[0]*0.01))
+        bln_range[0] = "(" + str(bin_list[0]) + ", " + str(bin_list[1]) + "]"
+
+        # using pandas to bin the values
         pandaframe1['bins'] = pd.cut(pandaframe1[xval], bin_list, labels=bin_list_names)
-        pd.value_counts(pandaframe1['bins'])
-        # demo pandas by checking if pd.value_counts(df[name]) works
+        # pd.value_counts(pandaframe1['bins'])  # sums to 513
+        pf2 = pd.value_counts(pandaframe1['bins'])      # groups all the rows in the dataframe by their bin name
+        pf2 = pf2.sort_index(axis=0)                    # sorts the dataframe by bin name - default is by value
+
+        # get the average y-val per bin name
+        df_avg_yval = []
+        for some_bin_name in bin_list_names:
+            df_avg_yval.append(((pandaframe1[pandaframe1['bins'] == some_bin_name]).describe()).loc['mean', yval])
+        pf2['avg_yval'] = df_avg_yval
+        pf2['bin_ranges'] = bln_range   # add the actual range as a column to the dataframe - HOLDUP DOESNT WORK
     # end hist1
 
     # successor to bbp2 - uses plotly instead of mpld3
