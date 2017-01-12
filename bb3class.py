@@ -332,13 +332,12 @@ class bb3class:
         else:
             print("xvalue stat not found:", xval)
             return
-            # sys.exit(1)
         if yval in self.axesdict:
             ytitle = self.axesdict[yval]
         else:
             print("[Exit Error]yvalue stat not found:", yval)
             return
-            # sys.exit(1)
+
         import numpy as np
         from scipy import stats
         import plotly
@@ -509,13 +508,18 @@ class bb3class:
         raw_data = {xval: xlist, yval: ylist}
         pandaframe1 = pd.DataFrame(raw_data, columns=[xval, yval])
         binsize = (xmax1 - xmin1) / num_bins
-        bin_list = []
+        bin_list = []               # list of bin ranges
+        bin_list_names = []         # list of names for the bins, i.e. bin0,...,binN
         bl_c = xmin1
-        for i in range(num_bins+1):
+        for i in range(num_bins):
+            bl_str = "bin " + str(i)
             bin_list.append(bl_c)
+            bin_list_names.append(round(bl_str, 2)) # round to two sigfigs
             bl_c += binsize
-
-
+        bin_list.append(round(bl_c, 2))             # add the "max" to the bin, adjusted for stupid float vals
+        bin_list[0] -= np.ceil(bin_list[0]*0.01)    # adjust min bin by lowering its threshold, since bin by rightmost (see docs)
+        pandaframe1['bins'] = pd.cut(pandaframe1[xval], bin_list, labels=bin_list_names)
+        # demo pandas by checking if pd.value_counts(df[name]) works
     # end hist1
 
     # successor to bbp2 - uses plotly instead of mpld3
