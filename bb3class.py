@@ -493,32 +493,42 @@ class bb3class:
         xmin1_c = 1
 
         for player_name in self.pdict:
+            player = self.pdict[player_name]
+            # to get a potential non-zero min value
             if xmin1_c == 1:
                 xmin1 = player[xval]
                 xmin1_c = 0
-            player = self.pdict[player_name]
+
             xlist.append(player[xval])
             ylist.append(player[yval])
+
+            # need max/min value to determine bin size
             if player[xval] > xmax1:
-                xmax1 = player[xval]    # need max value to determine bin size
+                xmax1 = player[xval]
             if player[xval] < xmin1:
-                xmin1 = player[xval]    # need min value to determine bin size
+                xmin1 = player[xval]
         # end loop
 
+        # put xlist and ylist into pandas' dataframe - pandas is very useful!!
         raw_data = {xval: xlist, yval: ylist}
         pandaframe1 = pd.DataFrame(raw_data, columns=[xval, yval])
+
+        # bin processing
         binsize = (xmax1 - xmin1) / num_bins
         bin_list = []               # list of bin ranges
-        bin_list_names = []         # list of names for the bins, i.e. bin0,...,binN
+        bin_list_names = []         # list of bin names, i.e. bin0,...,binN
         bl_c = xmin1
         for i in range(num_bins):
-            bl_str = "bin " + str(i)
-            bin_list.append(bl_c)
-            bin_list_names.append(round(bl_str, 2)) # round to two sigfigs
+            bl_str = "bin" + str(i)
+            bin_list.append(round(bl_c, 2))       # round to two sigfigs
+            bin_list_names.append(bl_str)
             bl_c += binsize
         bin_list.append(round(bl_c, 2))             # add the "max" to the bin, adjusted for stupid float vals
-        bin_list[0] -= np.ceil(bin_list[0]*0.01)    # adjust min bin by lowering its threshold, since bin by rightmost (see docs)
+        # adjust min bin by lowering its threshold, since binned by rightmost (see docs), i.e. (x1,x2]
+        bin_list[0] = round(bin_list[0] - np.ceil(bin_list[0]*0.01), 2)
+        # bin values
         pandaframe1['bins'] = pd.cut(pandaframe1[xval], bin_list, labels=bin_list_names)
+        pd.value_counts(pandaframe1['bins'])
         # demo pandas by checking if pd.value_counts(df[name]) works
     # end hist1
 

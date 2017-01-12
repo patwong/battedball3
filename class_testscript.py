@@ -19,7 +19,8 @@ x1 = bb3class.bb3class()
 yname = 'iso_str'
 xname = 'avg_hit_speed'
 gtype = "hist"
-x1.scatter(xname,yname,(True, True))
+# x1.scatter(xname,yname,(True, True))
+x1.hist1(xname, 'wRC+', 10)
 # if xname in axesdict and yname in axesdict:
 #     yax = (yname, axesdict[yname])
 #     xax = (xname, axesdict[xname])
@@ -37,6 +38,6 @@ x1.scatter(xname,yname,(True, True))
 
 # implements "main" from battedball.py
 
-x1.cleanfiles() # clears all the pickle files
-x1.__init__()   # after clearing the pickles, reinitialize the class with fresh pickle files + dicts
+# x1.cleanfiles() # clears all the pickle files
+# x1.__init__()   # after clearing the pickles, reinitialize the class with fresh pickle files + dicts
 
