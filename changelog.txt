@@ -89,7 +89,7 @@
 - moved "main" to a testscript (class_test_script.py)
 
 
-2017.10.11
+2017.01.11
 - moved scatter to separate function of class module
 - moved histogram to separate function of class module
 	- using pandas to sort list/array
@@ -101,7 +101,21 @@
 		- use statsdict's total player number to get frequency by percentage rather than by discrete value
 	- using plotly to have hoverable info tips
 
-		
+2017.01.12
+- finished hist
+	- using bar graph over histogram
+		- built-in histogram lacks useful tooltips
+	- pandas:
+		- used to determine max/min value of a column
+		- with dataframe, can count the values of a given dataframe's column
+			- dataframe is a matrix with nonhomogeneous values
+		- use dataframe's cut to bin the values
+		- when grouping similar values in a column using value_count, the return value is a pd.Series, not dataframe
+			- reconstructed dataframe is in pandaframe2, original dataframe is pandaframe1
+	- removed legacy 'hist' from code
+- how to pandas' cut: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.cut.html
+
+
 [to add]
 - correct free agent list at the start of the offseason (Kendrys Morales, Mitch Moreland not FA in source list)
 - convert files into a class

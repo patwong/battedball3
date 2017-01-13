@@ -469,8 +469,8 @@ class bb3class:
               str(lr_array.intercept))
     # end scatter
 
-    # uses pandas
-    def hist1(self, xval, yval, num_bins):
+    # updated histogram plotter - uses pandas and plotly's bar graphs rather than its built-in hist
+    def hist(self, xval, yval, num_bins):
         # sanity checks
         if xval in self.axesdict:
             xtitle = self.axesdict[xval]
@@ -491,11 +491,17 @@ class bb3class:
 
         import numpy as np
         import pandas as pd
+        import plotly
+        import plotly.graph_objs as go
+
+        # the "x-axis list" used for frequency data
+        # the "y-axis list" used for additional data to appear as hover text
         xlist = []
         ylist = []
-        plist_full = []
-        plist1 = []
+        ptitle = xtitle + " histogram"
+        pfilename = xval + "_hist.html"
 
+        # populate the x/y-lists
         for player_name in self.pdict:
             player = self.pdict[player_name]
             xlist.append(player[xval])
@@ -514,164 +520,71 @@ class bb3class:
         binsize = (xmax1 - xmin1) / num_bins
         bin_list = []               # list of bin ranges
         bin_list_names = []         # list of bin names, i.e. bin0,...,binN
-        bln_range = []              # list of bin names, by range (x0, x1], (x1, x2],..., (xn-1, xn]
-        bl_c = xmin1
+        bin_ranges = []             # list of bin names, by range (x0, x1], (x1, x2],..., (xn-1, xn]
+        bl_c = xmin1                # to initialize the bin ranges
         for i in range(num_bins):
-            bl_str = "bin" + str(i)
-            bin_list.append(round(bl_c, 2))       # round to two sigfigs
-            bln_str = "(" + str(round(bl_c, 2))
-            bin_list_names.append(bl_str)
+            bl_str = "bin" + str(i)                 # bl_str: for bin_list_names
+            bin_list.append(round(bl_c, 2))         # round to two sigfigs; precision isn't important
+            bln_str = "(" + str(round(bl_c, 2))     # bln_str: for bin_ranges
             bl_c += binsize
             bln_str += ", " + str(round(bl_c, 2)) + "]"
-            bln_range.append(bln_str)
+            bin_list_names.append(bl_str)
+            bin_ranges.append(bln_str)
         bin_list.append(round(bl_c, 2))             # add the "max" to the bin, adjusted for stupid float vals
 
         # adjust min bin by lowering its threshold, since binned by rightmost, i.e. (x1,x2] (see docs)
         bin_list[0] = float(bin_list[0] - np.ceil(bin_list[0]*0.01))
-        bln_range[0] = "(" + str(bin_list[0]) + ", " + str(bin_list[1]) + "]"
+        bin_ranges[0] = "(" + str(bin_list[0]) + ", " + str(bin_list[1]) + "]"
 
-        # using pandas to bin the values
+        # using pandas' cut to bin the values
         pandaframe1['bins'] = pd.cut(pandaframe1[xval], bin_list, labels=bin_list_names)
-        # pd.value_counts(pandaframe1['bins'])  # sums to 513
-        pf2 = pd.value_counts(pandaframe1['bins'])      # groups all the rows in the dataframe by their bin name
-        pf2 = pf2.sort_index(axis=0)                    # sorts the dataframe by bin name - default is by value
 
-        # get the average y-val per bin name
-        df_avg_yval = []
+        # groups all the rows in the dataframe by their bin name and gets their count
+        # pd.value_counts returns a pd.Series, not a dataframe
+        pdseries_temp = pd.value_counts(pandaframe1['bins'])
+        pdseries_temp = pdseries_temp.sort_index(axis=0)        # sorts the dataframe by bin name - default is by value
+
+        # get the average y-val per bin name and put it in a list
+        avg_yval_list = []
+        avg_y = 'avg_' + yval
         for some_bin_name in bin_list_names:
-            df_avg_yval.append(((pandaframe1[pandaframe1['bins'] == some_bin_name]).describe()).loc['mean', yval])
-        pf2['avg_yval'] = df_avg_yval
-        pf2['bin_ranges'] = bln_range   # add the actual range as a column to the dataframe - HOLDUP DOESNT WORK
-    # end hist1
+            # ugly code to get the average wRC+ per bin
+            # 1. get the value, 2. round the value, 3. format the value for hover text
+            avg_yval = ((pandaframe1[pandaframe1['bins'] == some_bin_name]).describe()).loc['mean', yval]
+            avg_yval = round(float(avg_yval), 2)
+            bin_count = "count: " + str(pdseries_temp.loc[some_bin_name])
+            avg_yval = bin_count + ", avg " + ytitle + ": " + str(avg_yval)
+            avg_yval_list.append(avg_yval)
 
-    # successor to bbp2 - uses plotly instead of mpld3
-    def hist(self, xval, yval, xy0):
-        if xval in self.axesdict:
-            xtitle = self.axesdict[xval]
-        else:
-            print("xvalue stat not found:", xval)
-            return
-            # sys.exit(1)
-        if yval in self.axesdict:
-            ytitle = self.axesdict[yval]
-        else:
-            print("[Exit Error]yvalue stat not found:", yval)
-            return
-            # sys.exit(1)
-        import numpy as np
-        import plotly
-        import plotly.graph_objs as go
-        yname = "wRC+"
-        ptitle = xtitle + " histogram"
-        pfilename = xval + "_histogram.html"
-
-        # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
-
-        plist_full = []
-        plist1 = []
-        falist = []
-        xmax1 = 0.0
-        xmaxname = ""
-        xmin1 = 0
-        xmin1_c = 1
-
-        # HISTOGRAM CODE!!!!!!!
-        for player_name in self.pdict:
-            player = self.pdict[player_name]
-            if xmin1_c == 1:
-                xmin1 = player[xval]
-                xmin1_c = 0
-
-            # if xy0[0] is true, then x is allowed to be 0
-            # if xy0[1] is true, then y is allowed to be 0
-            # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
-            xy2 = [True, True]
-            if not (xy0[0]):
-                xy2[0] = player[xval] > 0
-            if not (xy0[1]):
-                xy2[1] = player[yval] > 0
-
-            if xy2[0] and xy2[1]:
-                if player['freeagent']:
-                    falist.append([player['name'], player[xval]])
-                else:
-                    plist1.append([player['name'], player[xval]])
-                plist_full.append([player['name'], player[xval]])
-                if player[xval] > xmax1:
-                    xmax1 = player[xval]
-                    xmaxname = player['name']
-                if player[xval] < xmin1:
-                    xmin1 = player[xval]
-
-        # using 10 bins for the histogram
-        numbins = 10
-        binsize = (xmax1 - xmin1) / numbins
-
-        # list 1 for the 10th percentile, 2 for the 20th, etc
-        bin_of_bins = [[] for x in range(numbins)]
-
-        # get the average wRC+ for each bin
-        for player_name in self.pdict:
-            player = self.pdict[player_name]
-            bin_finder = xmin1
-            for x in range(0, numbins):
-                bin_finder += binsize
-                if player[xval] < bin_finder:
-                    bin_of_bins[x - 1].append(player[yval])
-                    break
-
-        # getting the stdev, mean of each bin
-        bin_stats = []
-        c = 0
-        for bin_list in bin_of_bins:
-            bin_array = np.asarray(bin_list)
-            bin_mean = np.mean(bin_array)
-            bin_sd = np.std(bin_array)
-            bin_stats.append(
-                "Average wRC+: " + format(bin_mean, '.2f') + "\nStandard Dev: " + format(bin_sd, '.2f'))
-        bin_stats_array = np.asarray(bin_stats)
-
-        # create the arrays to plot
-        plf_arr = np.asarray(plist_full)
-        # plf_arr_name = plf_arr[:, 0]
-        plf_x = np.asarray(plf_arr[:, 1], dtype='float64')
-
-        # plot the histogram
-        tr1 = go.Histogram(x=plf_x,
-                           # histnorm='probability density',
-                           text='hi',  # text= bin_stats_array,
-                           # hoverinfo="text",
-                           # name="velo buckets",
-                           autobinx=False,
-                           xbins=dict(start=np.min(plf_x), size=binsize, end=np.max(plf_x)),
-                           # marker=dict(colorbar=dict(
-                           #     tickmode='array',
-                           #     ticktext=bin_stats_array
-                           # )),
-                           opacity=0.5
-                           )
-        layout1 = dict(
+        # statdict['pc'] is the total count of players in the dictionary
+        pandaframe2 = pd.DataFrame({'bin_pct': pdseries_temp / self.statdict['pc'],
+                                    avg_y: avg_yval_list,
+                                    'bin_ranges': bin_ranges})
+        trace0 = go.Bar(
+            x=pandaframe2['bin_ranges'],
+            y=pandaframe2['bin_pct'],
+            text = pandaframe2[avg_y],
+            marker=dict(
+                color='rgb(158,202,225)',
+                line=dict(
+                    color='rgb(8,48,107)',
+                    width=1.5,
+                )
+            ),
+            opacity=0.6
+        )
+        data = [trace0]
+        layout = go.Layout(
             title=ptitle,
-            autosize=True,
-            bargap=0.015,
-            height=600,
-            width=700,
-            hovermode='x',
-            xaxis=dict(
-                autorange=True,
-                title=xtitle,
-                zeroline=False),
             yaxis=dict(
-                autorange=True,
-                title='count',
-                showticklabels=True,
-            ))
-        fig1 = dict(data=[tr1], layout=layout1)
-        plotly.offline.plot(fig1, filename=pfilename)
-        print("length of x:", str(len(plf_x)))
-        print(xtitle)
-        print(np.min(plf_x), np.max(plf_x))
-        # END HISTOGRAM CODE!!!!!!!!
-        # end plotter
+                zeroline=False,
+                title="Frequency"),
+            xaxis=dict(
+                zeroline=False,
+                title="Bin Ranges: "+xtitle)
+        )
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename=pfilename)
+    # end hist1
 
 # end bbclass
