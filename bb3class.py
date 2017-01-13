@@ -1,6 +1,6 @@
 class battedball:
     """
-    modularizes the battedball method collection into a class object
+    modularizes the battedball method collection into a class object.
     bbclass can only be defined if the valid json, csv, and txt files
     are located in the Data subdirectory of the working folder
     """
@@ -19,7 +19,7 @@ class battedball:
             f_a = fa.strip('\r\n')
             if f_a in self.pdict:
                 player = self.pdict[f_a]
-                player['freeagent'] = True  # this actually changes the value of the player in pdict
+                player['freeagent'] = True
     # end merge_fas
 
     # opens the json file and creates a dictionary
@@ -93,12 +93,9 @@ class battedball:
             if player['brl_pa'] > max_brl_pa:
                 max_brl_pa_name = player['name']
                 max_brl_pa = player['brl_pa']
-                # debugging statements
-                # pseason = str(player['season'])     # season is treated as an int
-                # pmhs = player['max_hit_speed']
-                # print "in " + pseason + ", " + pname + " had max hit speed of " + str(pmhs)
+            # debugging statements go here:
 
-                # end loop
+            # end loop
         # more code
 
         ############ league-wide stats!!! ############
@@ -121,7 +118,9 @@ class battedball:
         import csv
         import os.path
 
-        csvfile = open(csv_fname, 'rt', encoding='utf-8')   # safer to have script determine csv's encoding
+        # would be safer to have script determine csv's encoding
+        # manually determined in linux by "file -bi <filename>"
+        csvfile = open(csv_fname, 'rt', encoding='utf-8')
         csvreader = csv.reader(csvfile)
         notindict = "Data/playersnotindict.txt"
         f1 = open(notindict, 'a')
@@ -191,7 +190,7 @@ class battedball:
         print('operation complete')
         filedir = os.listdir()
         print("files currently in directory\n" + str(filedir))
-        filedir = os.chdir('..')
+        os.chdir('..')  # get back to home directory
     # end cleanfiles()
 
 
@@ -260,7 +259,6 @@ class battedball:
                 output_str.append(keys + ": " + str(keyvalue))
                 i += 1
                 if i == 3:
-                    # print(output_str)
                     print("".join(word.ljust(col_len) for word in output_str))
                     output_str = []
                     i = 0
@@ -322,11 +320,12 @@ class battedball:
     def scatter(self, xval, yval, xy0):
         # xval: stat to be plotted on x-axis
         # yval: stat to be plotted on y-axis
-        # xy0:
+        # xy0: tuple
         # if xy0[0] is true, then x is allowed to be 0
         # if xy0[1] is true, then y is allowed to be 0
         # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
 
+        # sanity checks
         if xval in self.axesdict:
             xtitle = self.axesdict[xval]
         else:
@@ -335,7 +334,14 @@ class battedball:
         if yval in self.axesdict:
             ytitle = self.axesdict[yval]
         else:
-            print("[Exit Error]yvalue stat not found:", yval)
+            print("yvalue stat not found:", yval)
+            return
+        if isinstance(xy0, tuple):
+            if not(isinstance(xy0[0], bool)) or not(isinstance(xy0[0], bool)):
+                print("xy0 needs to be a tuple of boolean values")
+                return
+        else:
+            print("xy0 needs to be a tuple of boolean values")
             return
 
         import numpy as np
@@ -349,7 +355,6 @@ class battedball:
         plist1 = []
         falist = []
         xmax1 = 0.0
-        xmaxname = ""
         xmin1 = 0
         xmin1_c = 1
         for player_name in self.pdict:
@@ -377,10 +382,9 @@ class battedball:
 
                 if player[xval] > xmax1:
                     xmax1 = player[xval]
-                    xmaxname = player['name']
                 if player[xval] < xmin1:
                     xmin1 = player[xval]
-        # print(xmaxname, xmax1)    # checking who's the x-max value
+        # end loop
 
         # normal players
         parr = np.asarray(plist1)
@@ -396,7 +400,6 @@ class battedball:
 
         # full player list
         plf_arr = np.asarray(plist_full)
-        # plf_arr_name = plf_arr[:, 0]
         plf_x = np.asarray(plf_arr[:, 1], dtype='float64')
         plf_y = np.asarray(plf_arr[:, 2], dtype='float64')
 
@@ -428,14 +431,12 @@ class battedball:
         else:
             xmin1 -= 0.05
             xmax1 += 0.05
-        # print("xmin1:", xmin1, "xmax1:", xmax1)
         x_lobf = np.linspace(xmin1, xmax1, 2)
         y_lobf = lr_array.slope * x_lobf + lr_array.intercept
         trace2 = go.Scatter(
             x=x_lobf,
             y=y_lobf,
             name='Line of Best Fit',
-            # text=faa_name,
             mode='lines'
         )
 
@@ -454,7 +455,6 @@ class battedball:
                       )
 
         # trace0: contracted players, trace1: free agents, trace2: line of best fit
-
         # plots line of best fit if there is moderate or better correlation
         if lr_array.rvalue > 0.3 or lr_array.rvalue < -0.3:     # positive or negative correlation
             data = [trace0, trace1, trace2]
