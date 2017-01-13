@@ -1,7 +1,7 @@
 import bb3class
 
 
-x1 = bb3class.bb3class()
+x1 = bb3class.battedball()
 yname = 'iso_str'
 yname2 = 'wRC+'
 xname = 'avg_hit_speed'

@@ -1,4 +1,4 @@
-class bb3class:
+class battedball:
     """
     modularizes the battedball method collection into a class object
     bbclass can only be defined if the valid json, csv, and txt files

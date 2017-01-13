@@ -1,12 +1,11 @@
 # battedball3
 testing python math libs with 2016 mlb batted ball data (python3 version)
 
-uses python's numpy, scipy, plotly, and mpld3 libraries
-
-battedball.py is the parser and a script in main() that sends data to the plotter. bbp2 uses the mpld3 libary, bbp3 uses plotly.
+uses python's numpy, scipy, pandas, plotly, and mpld3 libraries
 
 # what it does
 some interactive plots to visualize players' batted ball performance. using data from FanGraphs and Baseball Savant (MLB.com)
+
 
 # plots
 - "barrels/PA" versus average hitting speed scatterplot, [link](https://patwong.github.io/bb/brlpa_ahs.html)
@@ -15,11 +14,24 @@ some interactive plots to visualize players' batted ball performance. using data
 - a few of thoughts can be found in the above project page link
 - more graphs to come
 
+
+# what are all these files?
+bb3class.py encapsulates all the functionality of battedball.py (parser) and bbp3 (plotly plotter) into a class. a sample script on how to use bb3class is located in class_testscript.py
+
+other files
+- dictplay.py: used to test the dictionaries created by the parsers by retrieving them from their pickle files, if they exist
+- cleanfiles.py: removes all auxiliary files
+
+deprecated files:
+- battedball.py contains parsers and a script in main() that sends data to the plotter
+- bbp2 uses the mpld3 library
+- bbp3 uses plotly
+
 # license
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Patrick Wong \<<patrick.wong@uwaterloo.ca>\>
+Copyright (c) 2017 Patrick Wong \<<patrick.wong@uwaterloo.ca>\>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
