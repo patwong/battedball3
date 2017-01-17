@@ -23,7 +23,7 @@ other files:
 - dictplay.py: used to test the dictionaries created by the parsers, retrieving them from their pickle files if they exist
 - cleanfiles.py: removes all auxiliary files
 
-deprecated files:
+deprecated files (located in "old"):
 - battedball.py contains parsers and a script in main() that sends data to the plotter
 - bbp2 uses the mpld3 library
 - bbp3 uses plotly
