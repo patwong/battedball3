@@ -12,18 +12,17 @@ creates interactive plots to visualize players' batted ball performance. source 
 - average hit speed histogram, with average wRC+ hover text for every bin, [link](https://patwong.github.io/bb/avg_hit_speed_hist.html)
 - (maximum hit speed and average hit speed differential) versus batting average scatter plot (inspiration from jeff sullivan), [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
 - more graphs can be found on my project page [here!!](https://patwong.github.io/bb_project_page.html)
-- a few of thoughts can be found in the above project page link
-- more graph types and functionality to come
+- some of my thoughts on the results can be found in the above project page link
 
 
 # file description
-bb3class.py encapsulates all the functionality of battedball.py (parser) and bbp3 (plotly plotter) into a class. a sample script using bb3class is located in class_testscript.py
+battedball.py encapsulates all the functionality of old/battedball.py (parser) and old/bbp3.py (plotly plotter) into a class. a sample script using battedball.py is located in test_script.py
 
 other files:
 - dictplay.py: used to test the dictionaries created by the parsers, retrieving them from their pickle files if they exist
 - cleanfiles.py: removes all auxiliary files
 
-deprecated files (located in "old"):
+deprecated files (located in "old/"):
 - battedball.py contains parsers and a script in main() that sends data to the plotter
 - bbp2 uses the mpld3 library
 - bbp3 uses plotly
