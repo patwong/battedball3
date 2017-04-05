@@ -9,17 +9,17 @@ import plotly.graph_objs as go
 pdict = {}
 statdict = {}
 
-pickled_pdict = "Data/pdict.pickle"
-pickled_statdict = "Data/statdict.pickle"
+pickled_pdict = "Data/player_dictionary.pickle"
+pickled_statdict = "Data/stat_dictionary.pickle"
 if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
-    print('pickled pdict and statdict found')
+    print('pickled player_dictionary and stat_dictionary found')
     with open(pickled_pdict, 'rb') as pdhandle:
-        # need to declare pdict and statdict as global to access the global variable
+        # need to declare player_dictionary and stat_dictionary as global to access the global variable
         # otherwise will access a variable in the local scope
-        # global pdict
+        # global player_dictionary
         pdict = pickle.load(pdhandle)
     with open(pickled_statdict, 'rb') as sdhandle:
-        # global statdict
+        # global stat_dictionary
         statdict = pickle.load(sdhandle)
 # end if
 plist1 = []
@@ -84,4 +84,4 @@ plply.plot(fig, filename='maxbb_ahs_ba')
 
 
 # exec(open('battedball.py').read())
-# bbp2.brl_pa_vs_avg_hit_speed(pdict, statdict) # uses mpld3
+# bbp2.brl_pa_vs_avg_hit_speed(player_dictionary, stat_dictionary) # uses mpld3

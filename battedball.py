@@ -7,109 +7,111 @@ class battedball:
 
     # initialization routine
     def __init__(self):
-        self.pdict = {}
-        self.statdict = {}
-        self.axesdict = {}
-        self.__bbparser()
+        self.player_dictionary = {}
+        self.stat_dictionary = {}
+        self.axes_dictionary = {}
+        self.__bb_parser()
 
     # remove all auxiliary files created by my program
-    # list: playersnotindict.txt, pdict.pickle, statdict.pickle
+    # list: playersnotindict.txt, player_dictionary.pickle, stat_dictionary.pickle
     def cleanfiles(self):
         """
         cleanfiles()
         - removes all auxiliary files created by the script and recreates them
-        - e.g. playersnotindict.txt, pdict.pickle, statdict.pickle
+        - e.g. playersnotindict.txt, player_dictionary.pickle, stat_dictionary.pickle
         """
 
         import os
         os.chdir('Data')
-        filedir = os.listdir()
-        print("source files currently in directory\n" + str(filedir))
+        file_directory = os.listdir()
+        print("source files currently in directory\n" + str(file_directory))
         print("deleting all pickle files + playersnotindict.txt")
         # remove pickle files
-        for f in filedir:
-            if f.endswith(".pickle"):
-                os.remove(f)
-            elif f == 'playersnotindict.txt':
-                os.remove(f)
+        for a_file in file_directory:
+            if a_file.endswith(".pickle"):
+                os.remove(a_file)
+            elif a_file == 'playersnotindict.txt':
+                os.remove(a_file)
         print('operation complete')
-        filedir = os.listdir()
-        print("files currently in directory\n" + str(filedir))
+        file_directory = os.listdir()
+        print("files currently in directory\n" + str(file_directory))
         os.chdir('..')  # get back to home directory
         # reinitialize the auxiliary files
         self.__init__()
     # end cleanfiles()
 
     # given player name, list his stats
-    def find(self, pname):
+    def find(self, player_name):
         """
         find(pname)
         :param pname: string (player's name)
         :return: player's stats in console output
         """
 
-        if pname in self.pdict:
-            player = self.pdict[pname]
+        if player_name in self.player_dictionary:
+            player = self.player_dictionary[player_name]
             i = 0
-            output_str = []
-            col_len = 0
+            output_string = []
+            column_length = 0
             for keys in player:
                 if isinstance(player[keys], float):
-                    keyvalue = format(player[keys], '.2f')
+                    key_value = format(player[keys], '.2f')
                 else:
-                    keyvalue = player[keys]
-                key_plus_stats = keys + ": " + str(keyvalue)
-                kps_len = len(key_plus_stats)
-                if kps_len > col_len:
-                    col_len = kps_len
-            col_len += 2
+                    key_value = player[keys]
+                key_plus_stats = keys + ": " + str(key_value)
+                kps_length = len(key_plus_stats)
+                if kps_length > column_length:
+                    column_length = kps_length
+            column_length += 2
             for keys in player:
                 if isinstance(player[keys], float):
-                    keyvalue = format(player[keys], '.2f')
+                    key_value = format(player[keys], '.2f')
                 else:
-                    keyvalue = player[keys]
-                output_str.append(keys + ": " + str(keyvalue))
+                    key_value = player[keys]
+                output_string.append(keys + ": " + str(key_value))
                 i += 1
                 if i == 3:
-                    print("".join(word.ljust(col_len) for word in output_str))
-                    output_str = []
+                    print("".join(word.ljust(column_length) for word in output_string))
+                    output_string = []
                     i = 0
-            if output_str:
-                print("".join(word.ljust(col_len) for word in output_str))
+            if output_string:
+                print("".join(word.ljust(column_length) for word in output_string))
         else:
-            print("player not found: " + pname)
+            print("player not found: " + player_name)
     # end findplayer
 
     # produces scatter plots
-    def scatter(self, xval, yval, xy0):
+    def scatter(self, x_stat, y_stat, xy_0_limit):
         """
-        scatter(xval, yval, xy0)
-        :param xval: string, stat to be plotted on x-axis
-        :param yval: string, stat to be plotted on y-axis
-        :param xy0: (boolean, boolean)
-            if xy0[0] is true, then x is allowed to be 0
-            if xy0[1] is true, then y is allowed to be 0
+        scatter(x_stat, y_stat, xy_0_limit)
+        :param x_stat: string, stat to be plotted on x-axis
+        :param y_stat: string, stat to be plotted on y-axis
+        :param xy_0_limit: (boolean, boolean)
+            if xy_0_limit[0] is true, then x is allowed to be 0
+            if xy_0_limit[1] is true, then y is allowed to be 0
             otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
         :return: html file with the plotted stats (opens in default web browser)
         """
 
         # sanity checks
-        if xval in self.axesdict:
-            xtitle = self.axesdict[xval]
+        # checking if x_stat and y_stat exist in the axes_dictionary
+        # if they exist, then they will be formatted and put into the title and appear on graph axes
+        if x_stat in self.axes_dictionary:
+            x_title = self.axes_dictionary[x_stat]
         else:
-            print("xvalue stat not found:", xval)
+            print("stat for x-axis not found:", x_stat)
             return
-        if yval in self.axesdict:
-            ytitle = self.axesdict[yval]
+        if y_stat in self.axes_dictionary:
+            y_title = self.axes_dictionary[y_stat]
         else:
-            print("yvalue stat not found:", yval)
+            print("stat for y-axis not found:", y_stat)
             return
-        if isinstance(xy0, tuple):
-            if not(isinstance(xy0[0], bool)) or not(isinstance(xy0[0], bool)):
-                print("xy0 needs to be a tuple of boolean values")
+        if isinstance(xy_0_limit, tuple):
+            if not(isinstance(xy_0_limit[0], bool)) or not(isinstance(xy_0_limit[0], bool)):
+                print("xy_0_limit needs to be a tuple of boolean values")
                 return
         else:
-            print("xy0 needs to be a tuple of boolean values")
+            print("xy_0_limit needs to be a tuple of boolean values")
             return
 
         import numpy as np
@@ -117,152 +119,159 @@ class battedball:
         import plotly
         import plotly.graph_objs as go
 
-        ptitle = ytitle + " versus " + xtitle
-        pfilename = yval + "_vs_" + xval + ".html"
-        plist_full = []
-        plist1 = []
-        falist = []
-        xmax1 = 0.0
-        xmin1 = 0
-        xmin1_c = 1
-        for player_name in self.pdict:
-            player = self.pdict[player_name]
+        plot_title = y_title + " versus " + x_title
+        plot_filename = y_stat + "_vs_" + x_stat + ".html"
+        full_player_list = []
+        contracted_player_list = []
+        free_agent_list = []
+        max_x_value = 0.0
+        min_x_value = 0
+        min_x_value_check = 1
+        for player_name in self.player_dictionary:
+            player = self.player_dictionary[player_name]
 
             # set the first dictionary value as the first min value
-            if xmin1_c == 1:
-                xmin1 = player[xval]
-                xmin1_c = 0
-            # if xy0[0] is true, then x is allowed to be 0
-            # if xy0[1] is true, then y is allowed to be 0
+            if min_x_value_check == 1:
+                min_x_value = player[x_stat]
+                min_x_value_check = 0
+            # if xy_0_limit[0] is true, then x is allowed to be 0
+            # if xy_0_limit[1] is true, then y is allowed to be 0
             # otherwise, they are not allowed to be 0 and tuples that fail the test are ignored
             xy2 = [True, True]
-            if not (xy0[0]):
-                xy2[0] = player[xval] > 0
-            if not (xy0[1]):
-                xy2[1] = player[yval] > 0
+            if not (xy_0_limit[0]):
+                xy2[0] = player[x_stat] > 0
+            if not (xy_0_limit[1]):
+                xy2[1] = player[y_stat] > 0
 
             if xy2[0] and xy2[1]:  # if player[yax[0]] > 0 and player[xax[0]] > 0:
                 if player['freeagent']:
-                    falist.append([player['name'], player[xval], player[yval]])
+                    free_agent_list.append([player['name'], player[x_stat], player[y_stat]])
                 else:
-                    plist1.append([player['name'], player[xval], player[yval]])
-                plist_full.append([player['name'], player[xval], player[yval]])
+                    contracted_player_list.append([player['name'], player[x_stat], player[y_stat]])
+                full_player_list.append([player['name'], player[x_stat], player[y_stat]])
 
-                if player[xval] > xmax1:
-                    xmax1 = player[xval]
-                if player[xval] < xmin1:
-                    xmin1 = player[xval]
+                if player[x_stat] > max_x_value:
+                    max_x_value = player[x_stat]
+                if player[x_stat] < min_x_value:
+                    min_x_value = player[x_stat]
         # end loop
 
+        # convert FA/contracted player lists to array;
+        # lists are easy to append, arrays as input to plotly
+
         # normal players
-        parr = np.asarray(plist1)
-        parr_name = parr[:, 0]
-        parr_x = np.asarray(parr[:, 1], dtype='float64')
-        parr_y = np.asarray(parr[:, 2], dtype='float64')
+        contracted_player_array = np.asarray(contracted_player_list)
+        contracted_players_names = contracted_player_array[:, 0]
+        contracted_players_x_array = np.asarray(contracted_player_array[:, 1], dtype='float64')
+        contracted_players_y_array = np.asarray(contracted_player_array[:, 2], dtype='float64')
 
         # free agents
-        fa_arr = np.asarray(falist)
-        faa_name = fa_arr[:, 0]
-        faa_x = np.asarray(fa_arr[:, 1], dtype='float64')
-        faa_y = np.asarray(fa_arr[:, 2], dtype='float64')
+        free_agent_array = np.asarray(free_agent_list)
+        free_agent_names = free_agent_array[:, 0]
+        free_agent_x_array = np.asarray(free_agent_array[:, 1], dtype='float64')
+        free_agent_y_array = np.asarray(free_agent_array[:, 2], dtype='float64')
 
-        # full player list
-        plf_arr = np.asarray(plist_full)
-        plf_x = np.asarray(plf_arr[:, 1], dtype='float64')
-        plf_y = np.asarray(plf_arr[:, 2], dtype='float64')
+        # full player array - for the line of best fit
+        players_array = np.asarray(full_player_list)
+        players_x_array = np.asarray(players_array[:, 1], dtype='float64')
+        players_y_array = np.asarray(players_array[:, 2], dtype='float64')
 
         # plotting the contracted players
-        trace0 = go.Scatter(
-            x=parr_x,
-            y=parr_y,
+        contracted_plot = go.Scatter(
+            x=contracted_players_x_array,
+            y=contracted_players_y_array,
             name='Contracted Players',
-            text=parr_name,
+            text=contracted_players_names,
             mode='markers'
         )
 
         # plotting the free agents
-        trace1 = go.Scatter(
-            x=faa_x,
-            y=faa_y,
+        free_agent_plot = go.Scatter(
+            x=free_agent_x_array,
+            y=free_agent_y_array,
             name='Free Agents',
-            text=faa_name,
+            text=free_agent_names,
             mode='markers'
         )
 
         # line of best fit code
         # isinstance(value, type) => boolean, i.e. isinstance(0.5, float) => True
         # use this to adjust the xmin/xmax values
-        lr_array = stats.linregress(plf_x, plf_y)
-        if (xmax1 - xmin1) > 1:
-            xmin1 -= 1
-            xmax1 += 1
+        linear_regress_array = stats.linregress(players_x_array, players_y_array)
+
+        if (max_x_value - min_x_value) > 1:
+        # hacky way to adjust the line of best fit length to make it stretch less
+            min_x_value -= 1
+            max_x_value += 1
         else:
-            xmin1 -= 0.05
-            xmax1 += 0.05
-        x_lobf = np.linspace(xmin1, xmax1, 2)
-        y_lobf = lr_array.slope * x_lobf + lr_array.intercept
-        trace2 = go.Scatter(
-            x=x_lobf,
-            y=y_lobf,
+            min_x_value -= 0.05
+            max_x_value += 0.05
+        x_line_of_best_fit_array = np.linspace(min_x_value, max_x_value, 2)
+        y_line_of_best_fit_array = linear_regress_array.slope * x_line_of_best_fit_array + linear_regress_array.intercept
+        line_of_best_fit_plot = go.Scatter(
+            x=x_line_of_best_fit_array,
+            y=y_line_of_best_fit_array,
             name='Line of Best Fit',
             mode='lines'
         )
 
-        # put the correlation coefficient in the title
-        rvstring = format(lr_array.rvalue, '.2f')
-        ptitle = ptitle + " (rvalue: " + rvstring + ")"
-        layout = dict(title=ptitle,
+        # put the correlation coefficient (r) in the title (up to 2 decimal places)
+        r_value = format(linear_regress_array.rvalue, '.2f')
+        plot_title = plot_title + " (rvalue: " + r_value + ")"
+        layout = dict(title=plot_title,
                       yaxis=dict(
                           zeroline=False,
-                          title=ytitle
+                          title=y_title
                       ),
                       xaxis=dict(
                           zeroline=False,
-                          title=xtitle
+                          title=x_title
                       )
                       )
 
-        # trace0: contracted players, trace1: free agents, trace2: line of best fit
+        # contracted_plot: contracted players, free_agent_plot: free agents, line_of_best_fit_plot: line of best fit
         # plots line of best fit if there is moderate or better correlation
-        if lr_array.rvalue > 0.3 or lr_array.rvalue < -0.3:     # positive or negative correlation
-            data = [trace0, trace1, trace2]
+        if linear_regress_array.rvalue > 0.3 or linear_regress_array.rvalue < -0.3:     # positive or negative correlation
+            data = [contracted_plot, free_agent_plot, line_of_best_fit_plot]
         else:
-            data = [trace0, trace1]
+            data = [contracted_plot, free_agent_plot]
 
         fig = dict(data=data, layout=layout)
-        plotly.offline.plot(fig, filename=pfilename)
+        plotly.offline.plot(fig, filename=plot_filename)
 
         # printing out the linear regression values
-        print("rval:", str(lr_array.rvalue), ", slope:", str(lr_array.slope), ", y-intercept:",
-              str(lr_array.intercept))
+        print("rval:", str(linear_regress_array.rvalue), ", slope:", str(linear_regress_array.slope), ", y-intercept:",
+              str(linear_regress_array.intercept))
     # end scatter
 
     # updated histogram plotter - uses pandas and plotly's bar graphs rather than its built-in hist
-    def hist(self, xval, yval, num_bins):
+    def hist(self, frequency_stat, hover_stat, bins):
         """
-        hist(x, y, num_bins)
-        :param xval: string, stat to be binned and plotted
-        :param yval: string, stat that will be as hoverable text over each bin
-        :param num_bins: int, number of bins to be plotted
+        hist(x, y, bins)
+        :param frequency_stat: string, stat to be binned and plotted
+        :param hover_stat: string, stat that will be as hoverable text over each bin
+        :param bins: int, number of bins to be plotted
         :return: html file with the plotted stats (opens in default web browser)
         """
 
         # sanity checks
-        if xval in self.axesdict:
-            xtitle = self.axesdict[xval]
+        # checking if frequency_stat and hover_stat exist in the axes_dictionary
+        # if they exist, then they will be formatted and put into the title and appear on graph axes
+        if frequency_stat in self.axes_dictionary:
+            x_title = self.axes_dictionary[frequency_stat]
         else:
-            print("xvalue stat not found:", xval)
+            print("stat for x-axis not found:", frequency_stat)
             return
-        if yval in self.axesdict:
-            ytitle = self.axesdict[yval]
+        if hover_stat in self.axes_dictionary:
+            y_title = self.axes_dictionary[hover_stat]
         else:
-            print("yvalue stat not found:", yval)
+            print("stat for y-axis not found:", hover_stat)
             return
-        if not(isinstance(num_bins, int)):
+        if not(isinstance(bins, int)):
             print("enter a positive integer number of bins!!!")
             return
-        elif num_bins < 2:
-            print("please enter a valid number of bins (#bins > 1)")
+        elif bins < 2:
+            print("please enter a valid number of bins (bins > 1)")
             return
 
         import numpy as np
@@ -272,74 +281,75 @@ class battedball:
 
         # the "x-axis list" used for frequency data
         # the "y-axis list" used for additional data to appear as hover text
-        xlist = []
-        ylist = []
-        ptitle = xtitle + " histogram"
-        pfilename = xval + "_hist.html"
+        frequency_data_list = []
+        hover_text_stat_list = []
+        plot_title = x_title + " histogram"
+        plot_filename = frequency_stat + "_hist.html"
 
-        # populate the x/y-lists
-        for player_name in self.pdict:
-            player = self.pdict[player_name]
-            xlist.append(player[xval])
-            ylist.append(player[yval])
+        # populate the frequency/hover text lists
+        for player_name in self.player_dictionary:
+            player = self.player_dictionary[player_name]
+            frequency_data_list.append(player[frequency_stat])
+            hover_text_stat_list.append(player[hover_stat])
         # end loop
 
-        # put xlist and ylist into pandas' dataframe - pandas is very useful!!
-        raw_data = {xval: xlist, yval: ylist}
-        pandaframe1 = pd.DataFrame(raw_data, columns=[xval, yval])
+        # put frequency_data_list and hover_text_stat_list into pandas' dataframe - pandas is very useful!!
+        raw_data = {frequency_stat: frequency_data_list, hover_stat: hover_text_stat_list}
+        pandas_dataframe1 = pd.DataFrame(raw_data, columns=[frequency_stat, hover_stat])
 
         #get min/max value for bin sizes
-        xmax1 = float((pandaframe1.describe()).loc['max', xval])
-        xmin1 = float((pandaframe1.describe()).loc['min', xval])
+        frequency_max = float((pandas_dataframe1.describe()).loc['max', frequency_stat])
+        frequency_min = float((pandas_dataframe1.describe()).loc['min', frequency_stat])
 
         # bin processing
-        binsize = (xmax1 - xmin1) / num_bins
+        bin_size = (frequency_max - frequency_min) / bins
         bin_list = []               # list of bin ranges
-        bin_list_names = []         # list of bin names, i.e. bin0,...,binN
-        bin_ranges = []             # list of bin names, by range (x0, x1], (x1, x2],..., (xn-1, xn]
-        bl_c = xmin1                # to initialize the bin ranges
-        for i in range(num_bins):
-            bl_str = "bin" + str(i)                 # bl_str: for bin_list_names
-            bin_list.append(round(bl_c, 2))         # round to two sigfigs; precision isn't important
-            bln_str = "(" + str(round(bl_c, 2))     # bln_str: for bin_ranges
-            bl_c += binsize
-            bln_str += ", " + str(round(bl_c, 2)) + "]"
-            bin_list_names.append(bl_str)
-            bin_ranges.append(bln_str)
-        bin_list.append(round(bl_c, 2))             # add the "max" to the bin, adjusted for stupid float vals
+        names_of_bins = []          # list of bin names, i.e. bin0,...,binN
+        bin_ranges = []             # list of bin names by range, i.e. (x0, x1], (x1, x2],..., (xn-1, xn]
+        num_bins_init = frequency_min                # to initialize the bin ranges
+        for i in range(bins):
+            bin_name = "bin" + str(i)                               # bin_name: for names_of_bins
+            bin_list.append(round(num_bins_init, 2))                # round to two sigfigs; precision unimportant
+            bin_range_name = "(" + str(round(num_bins_init, 2))     # bin_range_name: for bin_ranges
+            num_bins_init += bin_size
+            bin_range_name += ", " + str(round(num_bins_init, 2)) + "]"
+            names_of_bins.append(bin_name)
+            bin_ranges.append(bin_range_name)
+        bin_list.append(round(num_bins_init, 2))             # add the "max" to the bin, adjusted for stupid float vals
 
         # adjust min bin by lowering its threshold, since binned by rightmost, i.e. (x1,x2] (see docs)
         bin_list[0] = float(bin_list[0] - np.ceil(bin_list[0]*0.01))
         bin_ranges[0] = "(" + str(bin_list[0]) + ", " + str(bin_list[1]) + "]"
 
         # using pandas' cut to bin the values
-        pandaframe1['bins'] = pd.cut(pandaframe1[xval], bin_list, labels=bin_list_names)
+        pandas_dataframe1['bins'] = pd.cut(pandas_dataframe1[frequency_stat], bin_list, labels=names_of_bins)
 
         # groups all the rows in the dataframe by their bin name and gets their count
         # pd.value_counts returns a pd.Series, not a dataframe
-        pdseries_temp = pd.value_counts(pandaframe1['bins'])
-        pdseries_temp = pdseries_temp.sort_index(axis=0)        # sorts the dataframe by bin name - default is by value
+        pandas_series1 = pd.value_counts(pandas_dataframe1['bins'])
+        pandas_series1 = pandas_series1.sort_index(axis=0)        # sorts dataframe by bin name - default is by value
 
         # get the average y-val per bin name and put it in a list
-        avg_yval_list = []
-        avg_y = 'avg_' + yval
-        for some_bin_name in bin_list_names:
+        avg_hover_stat_list = []
+        avg_hover_stat_name = 'avg_' + hover_stat
+        for some_bin_name in names_of_bins:
             # ugly code to get the average y-stat per bin
             # 1. get the value, 2. round the value, 3. format the value for hover text
-            avg_yval = ((pandaframe1[pandaframe1['bins'] == some_bin_name]).describe()).loc['mean', yval]
-            avg_yval = round(float(avg_yval), 2)
-            bin_count = "count: " + str(pdseries_temp.loc[some_bin_name])
-            avg_yval = bin_count + ", avg " + ytitle + ": " + str(avg_yval)
-            avg_yval_list.append(avg_yval)
+            avg_hover_stat = ((pandas_dataframe1[pandas_dataframe1['bins'] == some_bin_name]).describe()).loc['mean', hover_stat]
+            avg_hover_stat = round(float(avg_hover_stat), 2)
+            bin_count = "count: " + str(pandas_series1.loc[some_bin_name])
+            avg_hover_stat = bin_count + ", avg " + y_title + ": " + str(avg_hover_stat)
+            avg_hover_stat_list.append(avg_hover_stat)
 
-        # statdict['pc'] is the total count of players in the dictionary
-        pandaframe2 = pd.DataFrame({'bin_pct': pdseries_temp / self.statdict['pc'],
-                                    avg_y: avg_yval_list,
-                                    'bin_ranges': bin_ranges})
+        # stat_dictionary['pc'] is the total count of players in the dictionary
+        pandas_dataframe2 = pd.DataFrame({'bin_pct': pandas_series1 / self.stat_dictionary['pc'],
+                                          avg_hover_stat_name: avg_hover_stat_list,
+                                          'bin_ranges': bin_ranges})
+
         trace0 = go.Bar(
-            x=pandaframe2['bin_ranges'],
-            y=pandaframe2['bin_pct'],
-            text = pandaframe2[avg_y],
+            x=pandas_dataframe2['bin_ranges'],
+            y=pandas_dataframe2['bin_pct'],
+            text = pandas_dataframe2[avg_hover_stat_name],
             marker=dict(
                 color='rgb(158,202,225)',
                 line=dict(
@@ -351,16 +361,16 @@ class battedball:
         )
         data = [trace0]
         layout = go.Layout(
-            title=ptitle,
+            title=plot_title,
             yaxis=dict(
                 zeroline=False,
                 title="Frequency"),
             xaxis=dict(
                 zeroline=False,
-                title="Bin Ranges: "+xtitle)
+                title="Bin Ranges: "+x_title)
         )
         fig = go.Figure(data=data, layout=layout)
-        plotly.offline.plot(fig, filename=pfilename)
+        plotly.offline.plot(fig, filename=plot_filename)
     # end hist1
 
     ################################
@@ -370,11 +380,11 @@ class battedball:
     # merging list of free agents with dictionary
     # if player is a free agent, change their free agent status to True
     def __merge_fas(self, fa_file):
-        falist = open(fa_file)
-        for fa in falist:
-            f_a = fa.strip('\r\n')
-            if f_a in self.pdict:
-                player = self.pdict[f_a]
+        free_agent_list = open(fa_file)
+        for free_agent in free_agent_list:
+            free_agent = free_agent.strip('\r\n')
+            if free_agent in self.player_dictionary:
+                player = self.player_dictionary[free_agent]
                 player['freeagent'] = True
     # end merge_fas
 
@@ -401,7 +411,7 @@ class battedball:
         max_brl_pa_name = ""
         max_brl_pa = 0
 
-        # populate the dictionary pdict
+        # populate the dictionary player_dictionary
         for player in json1_data:
             pname = player['name']
 
@@ -432,9 +442,9 @@ class battedball:
             else:
                 player['freeagent'] = False
 
-            # populating pdict
+            # populating player_dictionary
             # sets a player's value in the dictionary
-            self.pdict[pname] = player
+            self.player_dictionary[pname] = player
             playercounter += 1
 
             # min/max cases for stats
@@ -455,18 +465,18 @@ class battedball:
         # more code
 
         ############ league-wide stats!!! ############
-        self.statdict['pc'] = playercounter
+        self.stat_dictionary['pc'] = playercounter
 
         # name of player with max/min average hitting speed, max/min hitting speed
-        self.statdict['max_avg_hs'] = mavahs
-        self.statdict['max_avg_hs_name'] = mavahs_name
-        self.statdict['min_avg_hs'] = minahs
-        self.statdict['min_avg_hs_name'] = minahs_name
+        self.stat_dictionary['max_avg_hs'] = mavahs
+        self.stat_dictionary['max_avg_hs_name'] = mavahs_name
+        self.stat_dictionary['min_avg_hs'] = minahs
+        self.stat_dictionary['min_avg_hs_name'] = minahs_name
 
-        self.statdict['max_brl_pa_name'] = max_brl_pa_name  # :)
-        self.statdict['max_brl_pa'] = max_brl_pa
+        self.stat_dictionary['max_brl_pa_name'] = max_brl_pa_name  # :)
+        self.stat_dictionary['max_brl_pa'] = max_brl_pa
 
-        self.statdict['league_ahs'] = float('%.2f' % (league_ahs / playercounter))  # truncate the float
+        self.stat_dictionary['league_ahs'] = float('%.2f' % (league_ahs / playercounter))  # truncate the float
     # end parse_and_dict
 
     # from csv file, add a player's BA to the dictionary
@@ -496,7 +506,7 @@ class battedball:
             # 11: BABIP, 12: BA, 13: OBP, 14: SLG, 15: wOBA, 16: wRC+, 17: BsR
             # 18: off rating, 19: def rating, 20: fWAR, 21: playerID
             player_name = row[0]
-            if player_name in self.pdict:
+            if player_name in self.player_dictionary:
                 bb_percent = float(row[8].strip(' %')) / 100
                 k_percent = float(row[9].strip(' %')) / 100
                 iso_str = float(row[10])
@@ -509,7 +519,7 @@ class battedball:
                 BsR = float(row[17])
                 fWAR = float(row[20])
 
-                player = self.pdict[player_name]
+                player = self.player_dictionary[player_name]
                 player['bb%'] = bb_percent
                 player['k%'] = k_percent
                 player['iso_str'] = iso_str
@@ -539,46 +549,46 @@ class battedball:
         if os.path.isfile(fname):
             print(fname, "found")
             with open(fname, 'rb') as ktahandle:
-                self.axesdict = pickle.load(ktahandle)
+                self.axes_dictionary = pickle.load(ktahandle)
         else:
             print(fname, "not found")
-            self.axesdict['fbld'] = "Average FB/LD Exit Velocity (MPH)"
-            self.axesdict['k%'] = "K%"
-            self.axesdict['wRC+'] = "wRC+"
-            self.axesdict['season'] = "Season"
-            self.axesdict['brl_pa'] = "Barrels/Plate Appearances"
-            self.axesdict['fWAR'] = "fWAR"
-            self.axesdict['max_hit_speed'] = "Maximum Exit Velocity (MPH)"
-            self.axesdict['brl_percent'] = "Barrels/Batted Ball Events"
-            self.axesdict['avg_distance'] = "Average Distance (ft)"
-            self.axesdict['slg'] = "SLG"
-            self.axesdict['max_distance'] = "Maximum Distance (ft)"
-            self.axesdict['iso_str'] = "Isolated Power"
-            self.axesdict['ba'] = "Batting Average"
-            self.axesdict['obp'] = "On-Base Percentage"
-            self.axesdict['barrels'] = "Total Barreled Balls"
-            self.axesdict['attempts'] = "Batted Ball Events"
-            self.axesdict['babip'] = "BABIP"
-            self.axesdict['avg_hit_speed'] = "Average Exit Velocity (MPH)"
-            self.axesdict['avg_hr_distance'] = "Average Home Run Distance (ft)"
-            self.axesdict['min_hit_speed'] = "Minimum Hit Speed (MPH)"
-            self.axesdict['gb'] = "Average Groundball Exit Velocity (MPH"
-            self.axesdict['wOBA'] = "wOBA"
-            self.axesdict['BsR'] = "BsR"
-            self.axesdict['bb%'] = "bb%"
+            self.axes_dictionary['fbld'] = "Average FB/LD Exit Velocity (MPH)"
+            self.axes_dictionary['k%'] = "K%"
+            self.axes_dictionary['wRC+'] = "wRC+"
+            self.axes_dictionary['season'] = "Season"
+            self.axes_dictionary['brl_pa'] = "Barrels/Plate Appearances"
+            self.axes_dictionary['fWAR'] = "fWAR"
+            self.axes_dictionary['max_hit_speed'] = "Maximum Exit Velocity (MPH)"
+            self.axes_dictionary['brl_percent'] = "Barrels/Batted Ball Events"
+            self.axes_dictionary['avg_distance'] = "Average Distance (ft)"
+            self.axes_dictionary['slg'] = "SLG"
+            self.axes_dictionary['max_distance'] = "Maximum Distance (ft)"
+            self.axes_dictionary['iso_str'] = "Isolated Power"
+            self.axes_dictionary['ba'] = "Batting Average"
+            self.axes_dictionary['obp'] = "On-Base Percentage"
+            self.axes_dictionary['barrels'] = "Total Barreled Balls"
+            self.axes_dictionary['attempts'] = "Batted Ball Events"
+            self.axes_dictionary['babip'] = "BABIP"
+            self.axes_dictionary['avg_hit_speed'] = "Average Exit Velocity (MPH)"
+            self.axes_dictionary['avg_hr_distance'] = "Average Home Run Distance (ft)"
+            self.axes_dictionary['min_hit_speed'] = "Minimum Hit Speed (MPH)"
+            self.axes_dictionary['gb'] = "Average Groundball Exit Velocity (MPH"
+            self.axes_dictionary['wOBA'] = "wOBA"
+            self.axes_dictionary['BsR'] = "BsR"
+            self.axes_dictionary['bb%'] = "bb%"
             with open(fname, 'wb') as ktahandle:
-                pickle.dump(self.axesdict, ktahandle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(self.axes_dictionary, ktahandle, protocol=pickle.HIGHEST_PROTOCOL)
     # end key_to_axes()
 
     # second initialization routine: calls the parsers
     # checks if the source files exist and populates the dictionaries
-    def __bbparser(self):
+    def __bb_parser(self):
         import os.path
         import sys
         import pickle
 
         # source files located in the Data directory:
-        # 1. json file used to populate pdict
+        # 1. json file used to populate player_dictionary
         # 2. list of free agent players for the current offseason
         # 3. fangraphs leaderboard stats
         json_fname = "Data/playerlist.json"
@@ -597,25 +607,25 @@ class battedball:
             sys.exit(1)
 
         # runs the parsers or retrieves the dicts from pickle files
-        # using pickle to store pdict and statdict
-        pickled_pdict = "Data/pdict.pickle"
-        pickled_statdict = "Data/statdict.pickle"
+        # using pickle to store player_dictionary and stat_dictionary
+        pickled_pdict = "Data/player_dictionary.pickle"
+        pickled_statdict = "Data/stat_dictionary.pickle"
         self.__key_to_axes()  # creates the shorthands for axes creation - has its own pickle checker
         if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
-            print('pickled pdict and statdict found')
+            print('pickled player_dictionary and stat_dictionary found')
             with open(pickled_pdict, 'rb') as pdhandle:
-                self.pdict = pickle.load(pdhandle)
+                self.player_dictionary = pickle.load(pdhandle)
             with open(pickled_statdict, 'rb') as sdhandle:
-                self.statdict = pickle.load(sdhandle)
+                self.stat_dictionary = pickle.load(sdhandle)
         else:
-            print('pickled pdict and statdict file not found')
-            self.__parse_and_dict(json_fname)  # populate pdict
+            print('pickled player_dictionary and stat_dictionary file not found')
+            self.__parse_and_dict(json_fname)  # populate player_dictionary
             self.__fgstats_to_dict(csvfname)
             self.__merge_fas(fa_file)  # adds free agent status to players
             with open(pickled_pdict, 'wb') as pdhandle:
-                pickle.dump(self.pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(self.player_dictionary, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
             with open(pickled_statdict, 'wb') as sdhandle:
-                pickle.dump(self.statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(self.stat_dictionary, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
     # end parser
 
 # end bbclass

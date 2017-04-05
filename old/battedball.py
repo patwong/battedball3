@@ -4,8 +4,8 @@ import json
 
 # global dictionaries
 # pdict: conversion of json file to dictionary of players and their batted ball numbers
-# statdict: stores certain playerbase stats, i.e. number of players in pdict
-# axesdict: player[key] -> string, where string is full name of the key
+# stat_dictionary: stores certain playerbase stats, i.e. number of players in pdict
+# axes_dictionary: player[key] -> string, where string is full name of the key
 pdict = {}
 statdict = {}
 axesdict = {}
@@ -177,7 +177,7 @@ def fgstats_to_dict(csv_fname):
 # end adding_ba_to_dict
 
 # remove all auxiliary files created by my program
-# list: playersnotindict.txt, pdict.pickle, statdict.pickle
+# list: playersnotindict.txt, pdict.pickle, stat_dictionary.pickle
 def cleanfiles():
     import os
     filedir = os.listdir()
@@ -239,7 +239,7 @@ def key_to_axes():
 
 
 # the main machine
-# battedball.py populates player dictionary "pdict" and stat dictionary "statdict"
+# battedball.py populates player dictionary "pdict" and stat dictionary "stat_dictionary"
 #   as it iterates through the json file of players
 def main():
     # dictionary is a lot faster than list
@@ -251,16 +251,16 @@ def main():
     json_fname = "Data/playerlist.json"
 
     # this block runs the parsers or retrieves the dicts from pickle files
-    # using pickle to store pdict and statdict
+    # using pickle to store pdict and stat_dictionary
     import os.path
     import pickle
-    pickled_pdict = "Data/pdict.pickle"
-    pickled_statdict = "Data/statdict.pickle"
+    pickled_pdict = "Data/player_dictionary.pickle"
+    pickled_statdict = "Data/stat_dictionary.pickle"
     key_to_axes()
     if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
-        print('pickled pdict and statdict found')
+        print('pickled player_dictionary and stat_dictionary found')
         with open(pickled_pdict, 'rb') as pdhandle:
-            # need to declare pdict and statdict as global to access the global variable
+            # need to declare pdict and stat_dictionary as global to access the global variable
             # otherwise will access a variable in the local scope
             global pdict
             pdict = pickle.load(pdhandle)
@@ -268,7 +268,7 @@ def main():
             global statdict
             statdict = pickle.load(sdhandle)
     else:
-        print('pickled pdict and statdict file not found')
+        print('pickled player_dictionary and stat_dictionary file not found')
         parse_and_dict(json_fname)              # populate pdict
         fa_file = "Data/fullfalist.txt"
         merge_fas(fa_file)                      # adds free agent status to players
@@ -306,7 +306,7 @@ def main():
         print(miketrout + " not found")
 
     # use plotter function to produce scatter plot
-    # bbplotter.fa_to_plot(pdict, statdict)
+    # bbplotter.fa_to_plot(pdict, stat_dictionary)
 
     import bbp3
     # def plotter(pdict, xax, yax, ptitle, pfilename,lobf,type, xy0):
@@ -351,14 +351,14 @@ def main():
     # with open(pickled_pdict, 'wb') as pdhandle:
     #     pickle.dump(pdict, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
     # with open(pickled_statdict, 'wb') as sdhandle:
-    #     pickle.dump(statdict, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
+    #     pickle.dump(stat_dictionary, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # !!debugging statements!!
 
     # dictionaries are mutable
     # passing a dictionary to a function passes the object, not copy
-    # if 'surprise' in statdict:
-    #     print (statdict['surprise'])
+    # if 'surprise' in stat_dictionary:
+    #     print (stat_dictionary['surprise'])
     # else:
     #    print ("There is no surprise :(")
 # end main

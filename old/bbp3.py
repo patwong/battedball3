@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 
 # successor to bbp2 - uses plotly instead of mpld3
 def plotter(pdict, xax, yax, ptitle, pfilename, lobf, gtype, xy0):
-    # xax: (pdict val, x-axis title), yax: (pdict val, y-axis title)
+    # xax: (player_dictionary val, x-axis title), yax: (player_dictionary val, y-axis title)
 
     g_types = ["scatter", "hist"]
     if not(gtype in g_types):
