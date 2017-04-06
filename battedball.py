@@ -43,8 +43,8 @@ class battedball:
     # given player name, list his stats
     def find(self, player_name):
         """
-        find(pname)
-        :param pname: string (player's name)
+        find(player_name)
+        :param player_name: string (player's name)
         :return: player's stats in console output
         """
 
@@ -346,7 +346,7 @@ class battedball:
                                           avg_hover_stat_name: avg_hover_stat_list,
                                           'bin_ranges': bin_ranges})
 
-        trace0 = go.Bar(
+        histogram_plot = go.Bar(
             x=pandas_dataframe2['bin_ranges'],
             y=pandas_dataframe2['bin_pct'],
             text = pandas_dataframe2[avg_hover_stat_name],
@@ -359,7 +359,7 @@ class battedball:
             ),
             opacity=0.6
         )
-        data = [trace0]
+        data = [histogram_plot]
         layout = go.Layout(
             title=plot_title,
             yaxis=dict(
@@ -379,7 +379,7 @@ class battedball:
 
     # merging list of free agents with dictionary
     # if player is a free agent, change their free agent status to True
-    def __merge_fas(self, fa_file):
+    def __merge_free_agents(self, fa_file):
         free_agent_list = open(fa_file)
         for free_agent in free_agent_list:
             free_agent = free_agent.strip('\r\n')
@@ -389,22 +389,22 @@ class battedball:
     # end merge_fas
 
     # opens the json file and creates a dictionary
-    # working with static jason file 'playerlist.json'
+    # working with static json file 'playerlist.json'
     # playerlist.json retrieved from page source at https://baseballsavant.mlb.com/statcast_leaderboard
     # query: minimum batted balls events of 30, season 2016
     # would be better if json file is specified from user, but this is just for fun :)
-    def __parse_and_dict(self, json_fname):
+    def __parse_and_dict(self, json_file):
         import json
-        json1_file = open(json_fname)
+        json1_file = open(json_file)
         json1_str = json1_file.read()
 
         # json.loads turns the json into a list of dictionaries
         json1_data = json.loads(json1_str)  # gets the whole dictionary
-        playercounter = 0
-        mavahs_name = ""
-        minahs_name = ""
-        mavahs = 0
-        minahs = 100
+        player_counter = 0
+        max_ahs_name = ""
+        min_ahs_name = ""
+        max_avg_hit_speed = 0
+        min_avg_hit_speed = 100
         league_ahs = 0
 
         # useful for setting the axes of the brl_pa/avg hit speed graph
@@ -445,17 +445,17 @@ class battedball:
             # populating player_dictionary
             # sets a player's value in the dictionary
             self.player_dictionary[pname] = player
-            playercounter += 1
+            player_counter += 1
 
             # min/max cases for stats
             # finding player with max avg hit speed
             # finding player with max amount of "barrels"/PA
-            if player['avg_hit_speed'] > mavahs:
-                mavahs = player['avg_hit_speed']
-                mavahs_name = pname
-            if player['avg_hit_speed'] < minahs:
-                minahs = player['avg_hit_speed']
-                minahs_name = pname
+            if player['avg_hit_speed'] > max_avg_hit_speed:
+                max_avg_hit_speed = player['avg_hit_speed']
+                max_ahs_name = pname
+            if player['avg_hit_speed'] < min_avg_hit_speed:
+                min_avg_hit_speed = player['avg_hit_speed']
+                min_ahs_name = pname
             if player['brl_pa'] > max_brl_pa:
                 max_brl_pa_name = player['name']
                 max_brl_pa = player['brl_pa']
@@ -465,38 +465,38 @@ class battedball:
         # more code
 
         ############ league-wide stats!!! ############
-        self.stat_dictionary['pc'] = playercounter
+        self.stat_dictionary['pc'] = player_counter
 
         # name of player with max/min average hitting speed, max/min hitting speed
-        self.stat_dictionary['max_avg_hs'] = mavahs
-        self.stat_dictionary['max_avg_hs_name'] = mavahs_name
-        self.stat_dictionary['min_avg_hs'] = minahs
-        self.stat_dictionary['min_avg_hs_name'] = minahs_name
+        self.stat_dictionary['max_avg_hs'] = max_avg_hit_speed
+        self.stat_dictionary['max_avg_hs_name'] = max_ahs_name
+        self.stat_dictionary['min_avg_hs'] = min_avg_hit_speed
+        self.stat_dictionary['min_avg_hs_name'] = min_ahs_name
 
         self.stat_dictionary['max_brl_pa_name'] = max_brl_pa_name  # :)
         self.stat_dictionary['max_brl_pa'] = max_brl_pa
 
-        self.stat_dictionary['league_ahs'] = float('%.2f' % (league_ahs / playercounter))  # truncate the float
+        self.stat_dictionary['league_ahs'] = float('%.2f' % (league_ahs / player_counter))  # truncate the float
     # end parse_and_dict
 
     # from csv file, add a player's BA to the dictionary
-    def __fgstats_to_dict(self, csv_fname):
+    def __fgstats_to_dict(self, csv_filename):
         import csv
         import os.path
 
         # would be safer to have script determine csv's encoding
         # manually determined in linux by "file -bi <filename>"
-        csvfile = open(csv_fname, 'rt', encoding='utf-8')
-        csvreader = csv.reader(csvfile)
-        notindict = "Data/playersnotindict.txt"
-        f1 = open(notindict, 'a')
+        csv_file = open(csv_filename, 'rt', encoding='utf-8')
+        csv_reader = csv.reader(csv_file)
+        not_in_dict = "Data/playersnotindict.txt"
+        f1 = open(not_in_dict, 'a')
         nic = 0
-        if not (os.path.isfile(notindict)):
+        if not (os.path.isfile(not_in_dict)):
             nic = 1  # if nic == 1, file only written once
             print("creating file that contains players not in dictionary")
             f1.write("players not in dictionary:\n")
 
-        for row in csvreader:
+        for row in csv_reader:
             # csv file is currently formatted with the first line being "Name, Avg"
             # all subsequent elements are of that form
             # csv.reader formats each line ("row") as a list of strings
@@ -532,7 +532,7 @@ class battedball:
                 player['BsR'] = BsR
                 player['fWAR'] = fWAR
             # if player not found, add his name to the file
-            elif os.path.isfile(notindict) and nic == 1 and row[0] != 'Name':
+            elif os.path.isfile(not_in_dict) and nic == 1 and row[0] != 'Name':
                 to_out = row[0] + '\n'
                 f1.write(to_out)
         # for safety, close the file
@@ -545,13 +545,13 @@ class battedball:
     def __key_to_axes(self):
         import os
         import pickle
-        fname = "Data/key_to_axes.pickle"
-        if os.path.isfile(fname):
-            print(fname, "found")
-            with open(fname, 'rb') as ktahandle:
+        filename = "Data/key_to_axes.pickle"
+        if os.path.isfile(filename):
+            print(filename, "found")
+            with open(filename, 'rb') as ktahandle:
                 self.axes_dictionary = pickle.load(ktahandle)
         else:
-            print(fname, "not found")
+            print(filename, "not found")
             self.axes_dictionary['fbld'] = "Average FB/LD Exit Velocity (MPH)"
             self.axes_dictionary['k%'] = "K%"
             self.axes_dictionary['wRC+'] = "wRC+"
@@ -576,7 +576,7 @@ class battedball:
             self.axes_dictionary['wOBA'] = "wOBA"
             self.axes_dictionary['BsR'] = "BsR"
             self.axes_dictionary['bb%'] = "bb%"
-            with open(fname, 'wb') as ktahandle:
+            with open(filename, 'wb') as ktahandle:
                 pickle.dump(self.axes_dictionary, ktahandle, protocol=pickle.HIGHEST_PROTOCOL)
     # end key_to_axes()
 
@@ -608,24 +608,24 @@ class battedball:
 
         # runs the parsers or retrieves the dicts from pickle files
         # using pickle to store player_dictionary and stat_dictionary
-        pickled_pdict = "Data/player_dictionary.pickle"
-        pickled_statdict = "Data/stat_dictionary.pickle"
+        pickled_player_dict = "Data/player_dictionary.pickle"
+        pickled_stat_dict = "Data/stat_dictionary.pickle"
         self.__key_to_axes()  # creates the shorthands for axes creation - has its own pickle checker
-        if os.path.isfile(pickled_pdict) and os.path.isfile(pickled_statdict):
+        if os.path.isfile(pickled_player_dict) and os.path.isfile(pickled_stat_dict):
             print('pickled player_dictionary and stat_dictionary found')
-            with open(pickled_pdict, 'rb') as pdhandle:
+            with open(pickled_player_dict, 'rb') as pdhandle:
                 self.player_dictionary = pickle.load(pdhandle)
-            with open(pickled_statdict, 'rb') as sdhandle:
+            with open(pickled_stat_dict, 'rb') as sdhandle:
                 self.stat_dictionary = pickle.load(sdhandle)
         else:
             print('pickled player_dictionary and stat_dictionary file not found')
             self.__parse_and_dict(json_fname)  # populate player_dictionary
             self.__fgstats_to_dict(csvfname)
-            self.__merge_fas(fa_file)  # adds free agent status to players
-            with open(pickled_pdict, 'wb') as pdhandle:
+            self.__merge_free_agents(fa_file)  # adds free agent status to players
+            with open(pickled_player_dict, 'wb') as pdhandle:
                 pickle.dump(self.player_dictionary, pdhandle, protocol=pickle.HIGHEST_PROTOCOL)
-            with open(pickled_statdict, 'wb') as sdhandle:
+            with open(pickled_stat_dict, 'wb') as sdhandle:
                 pickle.dump(self.stat_dictionary, sdhandle, protocol=pickle.HIGHEST_PROTOCOL)
     # end parser
 
-# end bbclass
+# end battedball class
