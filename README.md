@@ -11,7 +11,7 @@ creates interactive plots to visualize players' batted ball performance. source 
 - "barrels/PA" versus average hitting speed scatterplot, [link](https://patwong.github.io/bb/brl_pa_vs_avg_hit_speed.html)
 - average hit speed histogram, with average wRC+ hover text for every bin, [link](https://patwong.github.io/bb/avg_hit_speed_hist.html)
 - (maximum hit speed and average hit speed differential) versus batting average scatter plot (inspiration from jeff sullivan), [link](https://patwong.github.io/bb/max_bb_ahs_ba.html)
-- more graphs can be found on my project page [here!!](https://patwong.github.io/bb_project_page.html)
+- more graphs can be found on my project page [here!!](https://patwong.github.io/mlb_page.htmll)
 - some of my thoughts on the results can be found in the above project page link
 
 
